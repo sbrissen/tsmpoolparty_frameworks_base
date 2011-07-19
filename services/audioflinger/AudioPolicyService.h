@@ -123,6 +123,9 @@ public:
                                      audio_io_handle_t output,
                                      int delayMs = 0);
     virtual status_t setStreamOutput(AudioSystem::stream_type stream, audio_io_handle_t output);
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t setFMRxActive(bool state);
+#endif
     virtual void setParameters(audio_io_handle_t ioHandle,
                                const String8& keyValuePairs,
                                int delayMs = 0);
@@ -133,6 +136,12 @@ public:
     virtual status_t moveEffects(int session,
                                      audio_io_handle_t srcOutput,
                                      audio_io_handle_t dstOutput);
+<<<<<<< HEAD
+=======
+#ifdef HAVE_FM_RADIO
+    virtual status_t setFmVolume(float volume, int delayMs = 0);
+#endif
+>>>>>>> 1a6862f... Updated OMAP support
 
 private:
                         AudioPolicyService();

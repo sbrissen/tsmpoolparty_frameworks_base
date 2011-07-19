@@ -22,11 +22,25 @@
 
 #include <media/stagefright/MediaErrors.h>
 #include <utils/RefBase.h>
+<<<<<<< HEAD
+=======
+#ifdef USE_GETBUFFERINFO
+#include <binder/IMemory.h>
+#endif
+#ifdef OMAP_ENHANCEMENT
+#include <utils/Vector.h>
+#include "binder/IMemory.h"
+#endif
+>>>>>>> 1a6862f... Updated OMAP support
 
 namespace android {
 
 class MediaBuffer;
 class MetaData;
+
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP4)
+struct S3D_params;
+#endif
 
 struct MediaSource : public RefBase {
     MediaSource();
@@ -118,6 +132,18 @@ protected:
 private:
     MediaSource(const MediaSource &);
     MediaSource &operator=(const MediaSource &);
+
+public:
+#ifdef OMAP_ENHANCEMENT
+    // Method to share externally allocated buffers with the Codec.
+    virtual void setBuffers(Vector< sp<IMemory> > mBufferAddresse, bool portReconfig = false) {}
+    // Method used to reset read position without consuming the buffer
+    virtual int64_t setSeekTo(const ReadOptions *options) { return 0; }
+    virtual int getNumofOutputBuffers() {return -1; }
+#if defined(TARGET_OMAP4)
+    virtual void parseSEIMessages(S3D_params &mS3Dparams) {}
+#endif
+#endif
 };
 
 }  // namespace android

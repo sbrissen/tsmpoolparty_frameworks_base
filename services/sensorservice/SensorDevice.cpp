@@ -250,6 +250,44 @@ status_t SensorDevice::activate(void* ident, int handle, int enabled)
     status_t err(NO_ERROR);
     bool actuateHardware = false;
 
+<<<<<<< HEAD
+=======
+#ifdef USE_LGE_ALS_DUMMY
+
+    if (handle == SENSOR_TYPE_LIGHT) {
+        int nwr, ret, fd;
+        char value[2];
+
+#ifdef USE_LGE_ALS_OMAP3
+        fd = open("/sys/class/leds/lcd-backlight/als", O_RDWR);
+        if(fd < 0)
+            return -ENODEV;
+
+        nwr = sprintf(value, "%s\n", enabled ? "1" : "0");
+        write(fd, value, nwr);
+        close(fd);
+#else
+        fd = open("/sys/devices/platform/star_aat2870.0/lsensor_onoff", O_RDWR);
+        if(fd < 0)
+            return -ENODEV;
+
+        nwr = sprintf(value, "%s\n", enabled ? "1" : "0");
+        write(fd, value, nwr);
+        close(fd);
+        fd = open("/sys/devices/platform/star_aat2870.0/alc", O_RDWR);
+        if(fd < 0)
+            return -ENODEV;
+
+        nwr = sprintf(value, "%s\n", enabled ? "2" : "0");
+        write(fd, value, nwr);
+        close(fd);
+#endif
+
+        return 0;
+
+    }
+#endif
+>>>>>>> 1a6862f... Updated OMAP support
     Info& info( mActivationCount.editValueFor(handle) );
     if (enabled) {
         Mutex::Autolock _l(mLock);

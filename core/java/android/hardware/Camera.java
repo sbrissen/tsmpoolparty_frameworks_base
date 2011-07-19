@@ -2342,6 +2342,156 @@ public class Camera {
             splitFloat(get(KEY_FOCUS_DISTANCES), output);
         }
 
+<<<<<<< HEAD
+=======
+        /**
+         * Gets the current Continuous AF setting.
+         *
+         * @return one of CONTINUOUS_AF_XXX string constant. null if continuous AF
+         *         setting is not supported.
+         *
+         */
+        public String getContinuousAf() {
+            return get(KEY_CAF);
+        }
+
+        /**
+         * Sets the current Continuous AF mode.
+         * @param value CONTINUOUS_AF_XXX string constants.
+         *
+         */
+        public void setContinuousAf(String value) {
+            set(KEY_CAF, value);
+        }
+
+        /**
+         * Gets the supported Continuous AF modes.
+         *
+         * @return a List of CONTINUOUS_AF_XXX string constant. null if continuous AF
+         *         setting is not supported.
+         *
+         */
+        public List<String> getSupportedContinuousAfModes() {
+            String str = get(KEY_CAF + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
+         * Gets the current ISO setting.
+         *
+         * @return one of ISO_XXX string constant. null if ISO
+         *         setting is not supported.
+         */
+        public String getISOValue() {
+            return get(KEY_ISO_MODE);
+        }
+
+        /**
+         * Sets the ISO.
+         *
+         * @param iso ISO_XXX string constant.
+         */
+        public void setISOValue(String iso) {
+            set(KEY_ISO_MODE, iso);
+        }
+
+         /**
+         * Gets the supported ISO values.
+         *
+         * @return a List of FLASH_MODE_XXX string constants. null if flash mode
+         *         setting is not supported.
+         */
+        public List<String> getSupportedIsoValues() {
+            String str = get(KEY_ISO_MODE + SUPPORTED_VALUES_SUFFIX);
+            if (str == null && get("nv-mode-hint") != null) {
+                /* Support NV cams */
+                KEY_ISO_MODE = "nv-picture-iso";
+                str = get(KEY_ISO_MODE + SUPPORTED_VALUES_SUFFIX);
+            } else if (str == null && get("iso-mode-values") != null) {
+                /* Support OMAP cams */
+                KEY_ISO_MODE = "iso-mode";
+                str = get(KEY_ISO_MODE + SUPPORTED_VALUES_SUFFIX);
+            }
+            return split(str);
+        }
+
+         /**
+         * Gets the current LensShade Mode.
+         *
+         * @return LensShade Mode
+         */
+        public String getLensShade() {
+            return get(KEY_LENSSHADE);
+        }
+
+        /**
+         * Sets the current LensShade Mode.
+         *
+         * @return LensShade Mode
+         */
+        public void setLensShade(String lensshade) {
+            set(KEY_LENSSHADE, lensshade);
+        }
+
+         /**
+         * Gets the supported Lensshade modes.
+         *
+         * @return a List of LENS_MODE_XXX string constants. null if lens mode
+         *         setting is not supported.
+         */
+        public List<String> getSupportedLensShadeModes() {
+            String str = get(KEY_LENSSHADE + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+         /**
+         * Gets the current auto exposure setting.
+         *
+         * @return one of AUTO_EXPOSURE_XXX string constant. null if auto exposure
+         *         setting is not supported.
+         */
+        public String getAutoExposure() {
+            return get(KEY_AUTO_EXPOSURE);
+        }
+
+        /**
+         * Sets the current auto exposure setting.
+         *
+         * @param value AUTO_EXPOSURE_XXX string constants.
+         */
+        public void setAutoExposure(String value) {
+            set(KEY_AUTO_EXPOSURE, value);
+        }
+
+        /**
+         * Gets the supported auto exposure setting.
+         *
+         * @return a List of AUTO_EXPOSURE_XXX string constants. null if auto exposure
+         *         setting is not supported.
+         */
+        public List<String> getSupportedAutoexposure() {
+            String str = get(KEY_AUTO_EXPOSURE + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
+         * Sets the smart-contrast feature
+         * @param enabled SMART_CONTRAST desired status.
+         */
+        public void setSmartContrastEnabled(boolean enabled) {
+            set(KEY_SMART_CONTRAST, enabled ? "on" : "off");
+        }
+        
+        /**
+         * Gets the value of smart-contrast
+         *
+         * @return if smart-contrast is enabled
+         */
+        public boolean isSmartContrastEnabled() {
+            return "on".equals(get(KEY_SMART_CONTRAST));
+        }
+        
+>>>>>>> 1a6862f... Updated OMAP support
         // Splits a comma delimited string to an ArrayList of String.
         // Return null if the passing string is null or the size is 0.
         private ArrayList<String> split(String str) {

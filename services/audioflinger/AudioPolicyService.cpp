@@ -582,6 +582,16 @@ status_t AudioPolicyService::setStreamOutput(AudioSystem::stream_type stream,
     return af->setStreamOutput(stream, output);
 }
 
+#ifdef OMAP_ENHANCEMENT
+status_t AudioPolicyService::setFMRxActive(bool state)
+{
+    sp<IAudioFlinger> af = AudioSystem::get_audio_flinger();
+    if (af == 0) return PERMISSION_DENIED;
+
+    return af->setFMRxActive(state);
+}
+#endif
+
 status_t AudioPolicyService::moveEffects(int session, audio_io_handle_t srcOutput,
                                                audio_io_handle_t dstOutput)
 {
@@ -622,6 +632,16 @@ status_t AudioPolicyService::setVoiceVolume(float volume, int delayMs)
     return mAudioCommandThread->voiceVolumeCommand(volume, delayMs);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef HAVE_FM_RADIO
+status_t AudioPolicyService::setFmVolume(float volume, int delayMs)
+{
+    return mAudioCommandThread->fmVolumeCommand(volume, delayMs);
+}
+#endif
+
+>>>>>>> 1a6862f... Updated OMAP support
 // -----------  AudioPolicyService::AudioCommandThread implementation ----------
 
 AudioPolicyService::AudioCommandThread::AudioCommandThread(String8 name)
