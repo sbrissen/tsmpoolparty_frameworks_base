@@ -111,13 +111,11 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 	Drawable tmpDrawable = null;
 	Context mContext = getContext();
 	
-	File file = new File("/sdcard/tsm/lockscreen_wallpaper.jpg");
+	File file = new File(WALLPAPERIMAGE_PATH);
 
 	if(file.exists()){
 	  Log.d("LockscreenWallpaperUpdater", "wallpaper file exist ");
-	  //Bitmap selectedImage = BitmapFactory.decodeFile("/system/lockscreen_wallpaper.jpg");
-	  //wallpaperDrawable = new BitmapDrawable(selectedImage);
-	  wallpaperDrawable = new BitmapDrawable(mContext.getResources(),"/sdcard/tsm/lockscreen_wallpaper.jpg");
+          wallpaperDrawable = new BitmapDrawable(getResources(),"/system/lockscreen_wallpaper.jpg");
 	  return wallpaperDrawable;
 	
 	} else {

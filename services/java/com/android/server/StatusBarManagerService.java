@@ -84,6 +84,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub
         void onSetDisabled(int status);
         void onClearAll();
         void onNotificationClick(String pkg, String tag, int id);
+		void onNotificationClear(String pkg, String tag, int id);
         void onPanelRevealed();
         void onNotificationError(String pkg, String tag, int id,
                 int uid, int initialPid, String message);
@@ -292,7 +293,13 @@ public class StatusBarManagerService extends IStatusBarService.Stub
 
         mNotificationCallbacks.onNotificationClick(pkg, tag, id);
     }
+	
+	public void onNotificationClear(String pkg, String tag, int id) {
+        enforceStatusBarService();
 
+        mNotificationCallbacks.onNotificationClear(pkg, tag, id);
+    }
+	
     public void onNotificationError(String pkg, String tag, int id,
             int uid, int initialPid, String message) {
         enforceStatusBarService();

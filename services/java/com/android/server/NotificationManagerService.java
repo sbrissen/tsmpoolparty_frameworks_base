@@ -286,6 +286,10 @@ public class NotificationManagerService extends INotificationManager.Stub
             cancelNotification(pkg, tag, id, Notification.FLAG_AUTO_CANCEL,
                     Notification.FLAG_FOREGROUND_SERVICE);
         }
+		
+        public void onNotificationClear(String pkg, String tag, int id) {
+            cancelNotification(pkg, tag, id, 0, Notification.FLAG_FOREGROUND_SERVICE);
+        }
 
         public void onPanelRevealed() {
             synchronized (mNotificationList) {
