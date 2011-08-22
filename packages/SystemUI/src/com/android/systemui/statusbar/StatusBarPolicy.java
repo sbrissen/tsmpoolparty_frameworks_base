@@ -117,6 +117,7 @@ public class StatusBarPolicy {
     private static final boolean SHOW_BATTERY_WARNINGS_IN_CALL = true;
 
     private int mBatteryStyle;
+    private int mBatteryStyle2;
     private boolean mHideSignal;
     private boolean mHideAlarm;
 
@@ -779,8 +780,10 @@ public class StatusBarPolicy {
 
       mBatteryStyle = (Settings.System
                 .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE, 0));
+      mBatteryStyle2 = (Settings.System
+                .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE2, 0));
     
-      if(mBatteryStyle != 0){
+      if(mBatteryStyle != 0 && mBatteryStyle2 != 0){
 	mService.setIconVisibility("battery", false);
       }else{
 	mService.setIconVisibility("battery", true);

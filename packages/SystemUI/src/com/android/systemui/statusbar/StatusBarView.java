@@ -72,6 +72,8 @@ public class StatusBarView extends FrameLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_STYLE), false, this);
             resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_STYLE2), false, this);
+            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.BATTERY_AUTO_COLOR), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.BATTERY_COLOR_AUTO_CHARGING), false, this);
@@ -163,6 +165,7 @@ public class StatusBarView extends FrameLayout {
         int newDateRight;
 
 	int mShowBatteryIndicator;
+	int mShowBatteryIndicator2;	
 	
         newDateRight = getDateSize(mNotificationIcons, oldDateRight,
                 getViewOffset(mNotificationIcons));
@@ -187,8 +190,10 @@ public class StatusBarView extends FrameLayout {
 
         mShowBatteryIndicator = (Settings.System
                 .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE, 0));
+        mShowBatteryIndicator2 = (Settings.System
+                .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE2, 0));
 	
-	if(mShowBatteryIndicator == 1){
+	if(mShowBatteryIndicator == 1 || mShowBatteryIndicator2 == 1){
 	    mBatteryIndicator.setVisibility(VISIBLE);
 
         mBatteryAutoColor = (Settings.System
@@ -297,8 +302,10 @@ public class StatusBarView extends FrameLayout {
 
         int mShowBatteryIndicator = (Settings.System
                 .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE, 0));
+        int mShowBatteryIndicator2 = (Settings.System
+                .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE2, 0));
 
-	if(mShowBatteryIndicator == 1){
+	if(mShowBatteryIndicator == 1 || mShowBatteryIndicator2 == 1){
 	    Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null,
 	    new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	    

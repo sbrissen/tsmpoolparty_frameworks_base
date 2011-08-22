@@ -38,6 +38,7 @@ public class BatteryText extends TextView {
 
     // weather to show this battery widget or not
     private int mBatteryText;
+    private int mBatteryText2;
     private boolean mBatteryAutoColor;
     private int mBatteryTextColor;
 
@@ -54,6 +55,8 @@ public class BatteryText extends TextView {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_STYLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_STYLE2), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.BATTERY_AUTO_COLOR), false, this);
             resolver.registerContentObserver(
@@ -199,8 +202,10 @@ public class BatteryText extends TextView {
 
         mBatteryText = (Settings.System
                 .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE, 0));
+        mBatteryText2 = (Settings.System
+                .getInt(resolver, Settings.System.STATUSBAR_BATTERY_STYLE2, 0));
 
-        if (mBatteryText == 2)
+        if (mBatteryText == 2 || mBatteryText2 == 2)
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);

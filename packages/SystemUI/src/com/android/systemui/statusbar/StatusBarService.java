@@ -182,6 +182,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     int mDisabled = 0;
 
     int mLinger = 0;
+    boolean mBrightnessSlider;
 
     Context mContext;
 
@@ -983,6 +984,10 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     }
 
     boolean interceptTouchEvent(MotionEvent event) {
+	Context context = mStatusBarView.getContext();
+	mBrightnessSlider = (Settings.System
+                .getInt(context.getContentResolver(), Settings.System.STATUSBAR_BRIGHTNESS_DISABLE, 0) == 1);
+      
         if (SPEW) {
             Slog.d(TAG, "Touch: rawY=" + event.getRawY() + " event=" + event + " mDisabled="
                 + mDisabled);
@@ -1022,60 +1027,58 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 int y = (int)event.getRawY();
                 if (mAnimatingReveal && y < minY) {
-	          mVelocityTracker.computeCurrentVelocity(1000);
+		    if(!mBrightnessSlider){
+			mVelocityTracker.computeCurrentVelocity(1000);
 
-      float yVel = mVelocityTracker.getYVelocity();
-      if (yVel < 0) {
-        yVel = -yVel;
-      }
+			float yVel = mVelocityTracker.getYVelocity();
+			if (yVel < 0) {
+			  yVel = -yVel;
+			}
 
-      if (yVel < 50.0f) {
+			if (yVel < 50.0f) {
 
-        if (mLinger > 50) {
-              Context context = mStatusBarView.getContext();
-          boolean auto_brightness = false;
-          int brightness_mode = 0;
-          try {
-            brightness_mode = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
-          }
-          catch (SettingNotFoundException e) 
-          {
-            auto_brightness = false;
-          }
-          auto_brightness = (brightness_mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
-          if (auto_brightness)
-          {
-            // do nothing - Don't manually set brightness from statusbar
-          }
-          else
-          {
-            // set brightness according to x position on statusbar
-            float x = (float)event.getRawX();
-            float screen_width = (float)(context.getResources().getDisplayMetrics().widthPixels);
+			  if (mLinger > 50) {
+			    //Context context = mStatusBarView.getContext();
+			    boolean auto_brightness = false;
+			    int brightness_mode = 0;
+			    try {
+			      brightness_mode = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
+			    }
+			    catch (SettingNotFoundException e) {
+			      auto_brightness = false;
+			    }
+			    auto_brightness = (brightness_mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+			    if (auto_brightness) {
+			    // do nothing - Don't manually set brightness from statusbar
+			    }
+			    else {
+			      // set brightness according to x position on statusbar
+			      float x = (float)event.getRawX();
+			      float screen_width = (float)(context.getResources().getDisplayMetrics().widthPixels);
 
-            // Brightness set from the 90% of pixels in the middle of screen, can't always get to the edges
-            int new_brightness = (int)(((x - (screen_width * 0.05f))/(screen_width * 0.9f)) * (float)android.os.Power.BRIGHTNESS_ON );
+			      // Brightness set from the 90% of pixels in the middle of screen, can't always get to the edges
+			      int new_brightness = (int)(((x - (screen_width * 0.05f))/(screen_width * 0.9f)) * (float)android.os.Power.BRIGHTNESS_ON );
 
-            // don't let screen go completely dim or past 100% bright
-            if (new_brightness < 10) new_brightness = 10;
-            if (new_brightness > android.os.Power.BRIGHTNESS_ON ) new_brightness = android.os.Power.BRIGHTNESS_ON;
+				// don't let screen go completely dim or past 100% bright
+			      if (new_brightness < 10) new_brightness = 10;
+			      if (new_brightness > android.os.Power.BRIGHTNESS_ON ) new_brightness = android.os.Power.BRIGHTNESS_ON;
 
-            // Set the brightness
-            try {  
-              IPowerManager.Stub.asInterface(ServiceManager.getService("power")).setBacklightBrightness(new_brightness);
-              Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, new_brightness);
-            }
-            catch (Exception e)
-            {
-              Slog.w(TAG, "Setting Brightness failed: " + e);
-            }
-          } 
-        }else{
-          mLinger++;
-        }
-      }else{
-        mLinger = 0;
-      }
+			      // Set the brightness
+			      try {  
+				IPowerManager.Stub.asInterface(ServiceManager.getService("power")).setBacklightBrightness(new_brightness);
+				Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, new_brightness);
+			      }
+			      catch (Exception e) {
+				Slog.w(TAG, "Setting Brightness failed: " + e);
+			      }
+			    } 
+			  }else{
+			      mLinger++;
+			  }
+			}else{
+			  mLinger = 0;
+			}
+		    }
                 } else  {
                     mAnimatingReveal = false;
                     updateExpandedViewPos(y + mViewDelta);

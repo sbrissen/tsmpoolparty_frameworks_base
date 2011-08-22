@@ -1128,10 +1128,12 @@ public final class Settings {
 	public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color"; 
 	public static final String HIDE_SIGNAL_ICON = "hide_signal_icon";
 	public static final String STATUSBAR_BATTERY_STYLE = "statusbar_battery_style";
+	public static final String STATUSBAR_BATTERY_STYLE2 = "statusbar_battery_style2";
 	public static final String STATUSBAR_HIDE_ALARM = "statusbar_hide_alarm";
 	public static final String STATUSBAR_DATECLOCK = "statusbar_dateclock";
 	public static final String STATUSBAR_CARRIER_TEXT = "statusbar_carrier_text";
 	public static final String STATUSBAR_CARRIER_COLOR = "statusbar_carrier_color";
+	public static final String STATUSBAR_BRIGHTNESS_DISABLE = "statusbar_brightness_disable";
 	public static final String HIDE_ADB_ICON = "hide_adb_icon";
 	public static final String BATTERY_OPTIONS = "battery_options";
 	public static final String DATECLOCK_COLOR = "dateclock_color";
@@ -1174,6 +1176,9 @@ public final class Settings {
         public static final String TORCH_STATE = "torch_state";
         public static final String LIGHT_SENSOR_CUSTOM = "light_sensor_custom";
         public static final String LIGHT_SCREEN_DIM = "light_screen_dim";
+        public static final String OVERSCROLL_EFFECT = "overscroll_effect";
+	public static final String OVERSCROLL_WEIGHT = "overscroll_weight";
+	public static final String OVERSCROLL_COLOR = "overscroll_color";
 	
         /**
          * A comma separated list of radios that should to be disabled when airplane mode
