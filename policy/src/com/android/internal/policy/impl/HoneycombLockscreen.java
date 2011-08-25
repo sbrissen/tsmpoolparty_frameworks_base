@@ -263,7 +263,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mCarrier.setSelected(true);
         mCarrier.setTextColor(0xffffffff);
 
-	mMainLayout = (RelativeLayout) findViewById(R.id.root);
+	mMainLayout = (RelativeLayout) findViewById(R.id.wallpaper_panel);
 
 	mCustomMsg = (TextView) findViewById(R.id.customMsg);
 	String r = (Settings.System.getString(resolver, Settings.System.LOCKSCREEN_CUSTOM_MSG));
@@ -793,6 +793,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         resetStatusInfo(mUpdateMonitor);
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
         mSelector.enableUnlockMode();
+	mLockscreenWallpaperUpdater.onResume();
     }
 
     /** {@inheritDoc} */

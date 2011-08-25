@@ -27,7 +27,7 @@
     android:orientation="horizontal"
     android:background="#70000000"
     android:id="@+id/root">
-
+    <RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
     <!-- left side -->
     <RelativeLayout
             android:layout_width="0dip"
@@ -234,5 +234,5 @@
         android:layout_marginRight="80dip"
         android:visibility="gone"
         />
-
+      </RelativeLayout>
 </LinearLayout>

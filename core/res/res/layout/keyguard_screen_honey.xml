@@ -16,7 +16,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 	android:background="#70000000"
 	android:gravity="center_horizontal"
 	android:id="@+id/root">
-
+<RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
 	<TextView
 		android:id="@+id/carrier"
 		android:layout_width="wrap_content"
@@ -205,4 +205,5 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:drawablePadding="4dip" 
 		android:layout_alignParentBottom="true"
 		android:gravity="bottom" />
+	      </RelativeLayout>
 </RelativeLayout>

@@ -16,6 +16,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 	android:background="#70000000"
 	android:gravity="center_horizontal"
 	android:id="@+id/root">
+	<RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
 	<TextView
 		android:id="@+id/customMsg"
 		android:layout_width="wrap_content"
@@ -206,18 +207,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:layout_toRightOf="@+id/musicControlPause"
 		android:background="@color/transparent"
 		android:visibility="gone" />
-	<TextView
-		android:id="@+id/musicNowPlaying"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerInParent="true"
-		android:lines="1"
-		android:scrollHorizontally="true"
-		android:ellipsize="marquee"
-		android:paddingTop="10dip"
-		android:gravity="bottom"
-		android:layout_alignWithParentIfMissing="true"
-		android:textAppearance="?android:attr/textAppearanceSmall" />
+
 	<TextView
 		android:id="@+id/screenLocked"
 		android:layout_width="wrap_content"
@@ -227,4 +217,5 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:drawablePadding="4dip" 
 		android:layout_alignParentBottom="true"
 		android:gravity="bottom" />
+	      </RelativeLayout>
 </RelativeLayout>

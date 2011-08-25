@@ -78,6 +78,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.provider.Settings;
+import android.net.Uri;
+import java.net.URISyntaxException;
 
 /**
  * Android-specific Window.
@@ -164,7 +167,8 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     private SearchManager mSearchManager = null;
 
     private TelephonyManager mTelephonyManager = null;
-    
+
+   
     public PhoneWindow(Context context) {
         super(context);
         mLayoutInflater = LayoutInflater.from(context);
@@ -1250,6 +1254,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 if (event.getRepeatCount() == 0) {
                     dispatcher.startTracking(event, this);
                 } else if (event.isLongPress() && dispatcher.isTracking(event)) {
+		    String mCustomSearch = Settings.System.getString(getContext().getContentResolver(),
+                            Settings.System.CUSTOM_SEARCH_APP);
+                    if(mCustomSearch != null){
+                        runCustomApp(mCustomSearch);
+                        break;
+                    }
+
                     Configuration config = getContext().getResources().getConfiguration(); 
                     if (config.keyboard == Configuration.KEYBOARD_NOKEYS
                             || config.hardKeyboardHidden
@@ -1401,7 +1412,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                     break;
                 }
                 if (event.isTracking() && !event.isCanceled()) {
-                    launchDefaultSearch();
+		      launchDefaultSearch();
                 }
                 return true;
             }
@@ -2806,5 +2817,20 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
     void sendCloseSystemWindows(String reason) {
         PhoneWindowManager.sendCloseSystemWindows(getContext(), reason);
+    }
+
+    void runCustomApp(String uri) {
+        if (uri != null) {
+            try {
+                Intent i = Intent.parseUri(uri, 0);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                getContext().startActivity(i);
+            } catch (URISyntaxException e) {
+
+            } catch (ActivityNotFoundException e) {
+
+            }
+        }
     }
 }

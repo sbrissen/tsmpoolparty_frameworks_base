@@ -25,9 +25,9 @@
     xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#70000000"
     android:gravity="center_horizontal"
     android:id="@+id/root">
+    <RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
     
     <TextView
         android:id="@+id/customMsg"
@@ -231,6 +231,6 @@
             android:background="@color/transparent"
             android:visibility="gone"
 	      />
-
+	    </RelativeLayout>
 </RelativeLayout>
 

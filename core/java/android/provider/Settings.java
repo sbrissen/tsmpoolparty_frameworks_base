@@ -1179,6 +1179,8 @@ public final class Settings {
         public static final String OVERSCROLL_EFFECT = "overscroll_effect";
 	public static final String OVERSCROLL_WEIGHT = "overscroll_weight";
 	public static final String OVERSCROLL_COLOR = "overscroll_color";
+	public static final String CUSTOM_SEARCH_APP = "custom_search_app";
+	public static final String LOCKSCREEN_ROTARY_UNLOCK_DOWN = "lockscreen_rotary_unlock_down";
 	
         /**
          * A comma separated list of radios that should to be disabled when airplane mode

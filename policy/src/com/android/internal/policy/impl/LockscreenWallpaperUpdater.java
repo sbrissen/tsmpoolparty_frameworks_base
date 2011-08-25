@@ -21,12 +21,16 @@ import android.view.ViewGroup;
 import android.provider.Settings;
 import android.content.ContentResolver;
 import android.content.res.Resources;
+import android.net.Uri;
+import java.io.InputStream;
+import java.io.FileInputStream;
+
 
 import com.android.internal.R;
 
 class LockscreenWallpaperUpdater extends RelativeLayout {
     
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int IS_CHANGED_DRAWABLE = 1;
     private static final int IS_NOT_CHANGED_DRAWABLE = 0;
     private static final int MODE_HOMESCREEN_WALLPAPER = 0;
@@ -34,7 +38,7 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
     private static final int MSG_BOOT_COMPLETED = 0x140;
     private static final int MSG_LOCKSCREENWALLPAPER_CHANGED = 0x136;
     private static final String TAG = "LockscreenWallpaperUpdater";
-    private static final String WALLPAPERIMAGE_PATH = "/mnt/sdcard/tsm/lockscreen_wallpaper.jpg";
+    private static final String WALLPAPERIMAGE_PATH = "/data/data/com.android.tsm_parts/lockscreen_wallpaper.jpg";
 
     private boolean mBootCompleted = false;
     private BroadcastReceiver mBroadcastReceiver;
@@ -74,6 +78,7 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 	IntentFilter filter = new IntentFilter();
 	filter.addAction(LOCKSCREEN_WALLPAPER_INFO);
 	filter.addAction("android.intent.action.BOOT_COMPLETED");
+	filter.addAction("android.intent.action.MEDIA_MOUNTED");
 	
 	mBroadcastReceiver = new BroadcastReceiver() {
 	    public void onReceive(Context context, Intent intent){
@@ -81,10 +86,11 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 		if(LOCKSCREEN_WALLPAPER_INFO.equals(action)){
 		    int mode = intent.getIntExtra("isChanged",0);		    
 		    mHandler.sendMessage(mHandler.obtainMessage(0x136,mode,0x64));
-		} else if("android.intent.action.BOOT_COMPLETED".equals(action)){
+		} else if("android.intent.action.MEDIA_MOUNTED".equals(action)){
+		    Log.d("LockscreenWallpaperUpdater", "MEDIA_MOUNTED");
 		    int mode = intent.getIntExtra("isChanged",0);		    
 		    mHandler.sendMessage(mHandler.obtainMessage(0x140));
-		}
+		} else {}
 	    }
 	};
 	 
@@ -99,25 +105,27 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 
 	if(mBootCompleted){
 	  return mLockscreenWallpaperDrawable;
+
 	}else {
 	  Log.d("LockscreenWallpaperUpdater","drawable is null(keyguardupdatemonitor private get) ");
 	  setLockscreenDrawable();
+	  return mLockscreenWallpaperDrawable;
 	}
-      return null;
     }
 
     private Drawable getWallpaperDrawable(){
-	BitmapDrawable wallpaperDrawable = null;
+	BitmapDrawable wallpaperDrawable;
 	Drawable tmpDrawable = null;
+	Bitmap bitmap;
 	Context mContext = getContext();
-	
+		
 	File file = new File(WALLPAPERIMAGE_PATH);
+
 
 	if(file.exists()){
 	  Log.d("LockscreenWallpaperUpdater", "wallpaper file exist ");
-          wallpaperDrawable = new BitmapDrawable(getResources(),"/system/lockscreen_wallpaper.jpg");
-	  return wallpaperDrawable;
-	
+	  wallpaperDrawable = new BitmapDrawable(mContext.getResources(),WALLPAPERIMAGE_PATH);
+	  return wallpaperDrawable;	
 	} else {
 	  Log.d("LockscreenWallpaperUpdater", "wallpaper file not exist ");
 	  return mContext.getResources().getDrawable(R.drawable.default_lockscreen_wallpaper);

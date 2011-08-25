@@ -238,7 +238,7 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         mCarrier.setSelected(true);
         mCarrier.setTextColor(0xffffffff);
 
-	mMainLayout = (RelativeLayout) findViewById(R.id.root);
+	mMainLayout = (RelativeLayout) findViewById(R.id.wallpaper_panel);
 
 	mCustomMsg = (TextView) findViewById(R.id.customMsg);
 	String r = (Settings.System.getString(resolver, Settings.System.LOCKSCREEN_CUSTOM_MSG));

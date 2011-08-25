@@ -57,7 +57,7 @@ import java.io.File;
 class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateMonitor.InfoCallback,
         KeyguardUpdateMonitor.SimStateCallback, SlidingTab.OnTriggerListener {
 
-    private static final boolean DBG = false;
+    private static final boolean DBG = true;
     private static final String TAG = "LockScreen";
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
 
@@ -230,7 +230,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         mCarrier.setSelected(true);
         mCarrier.setTextColor(0xffffffff);
 
-	mMainLayout = (RelativeLayout) findViewById(R.id.root);
+	mMainLayout = (RelativeLayout) findViewById(R.id.wallpaper_panel);
 
 	mCustomMsg = (TextView) findViewById(R.id.customMsg);
 	String r = (Settings.System.getString(resolver, Settings.System.LOCKSCREEN_CUSTOM_MSG));
@@ -252,9 +252,9 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         mSelector.setHoldAfterTrigger(true, false);
         mSelector.setLeftHintText(R.string.lockscreen_unlock_label);
 
-	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(context);
+	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(mContext);
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
-	mMainLayout.addView(mLockscreenWallpaperUpdater,0);
+	mMainLayout.addView(mLockscreenWallpaperUpdater,0x0);
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
@@ -357,6 +357,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         mShowingBatteryInfo = updateMonitor.shouldShowBatteryInfo();
         mPluggedIn = updateMonitor.isDevicePluggedIn();
         mBatteryLevel = updateMonitor.getBatteryLevel();
+	mIsMusicActive = am.isMusicActive();
 
         mStatus = getCurrentStatus(updateMonitor.getSimState());
         updateLayout(mStatus);
