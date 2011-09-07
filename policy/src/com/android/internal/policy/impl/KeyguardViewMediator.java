@@ -247,6 +247,12 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
      */
     private boolean mWaitingUntilKeyguardVisible = false;
 
+    private static String mArtist = null;
+    private static String mTrack = null;
+    private static Boolean mPlaying = null;
+    private static long mSongId = 0;
+    private static long mAlbumId = 0;
+
     public KeyguardViewMediator(Context context, PhoneWindowManager callback,
             LocalPowerManager powerManager) {
         mContext = context;
@@ -1142,6 +1148,44 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
             if (DEBUG) Log.d(TAG, "handleNotifyScreenOn");
             mKeyguardViewManager.onScreenTurnedOn();
         }
+    }
+
+    private BroadcastReceiver mMusicReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            mArtist = intent.getStringExtra("artist");
+            mTrack = intent.getStringExtra("track");
+            mPlaying = intent.getBooleanExtra("playing", false);
+            mSongId = intent.getLongExtra("songid", 0);
+            mAlbumId = intent.getLongExtra("albumid", 0);
+            intent = new Intent("internal.policy.impl.updateSongStatus");
+            context.sendBroadcast(intent);
+        }
+    };
+    public static String NowPlaying() {
+        if (mArtist != null && mPlaying) {
+            return (mArtist + " - " + mTrack);
+        } else {
+            return "";
+        }
+    }
+
+    public static String TrackId() {
+        return mTrack;
+    }
+
+    public static long SongId() {
+        return mSongId;
+    }
+
+    public static String Artist() {
+        return mArtist;
+    }
+
+    public static long AlbumId() {
+        return mAlbumId;
     }
 }
 

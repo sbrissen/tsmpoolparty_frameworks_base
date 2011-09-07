@@ -705,6 +705,12 @@ public class Intent implements Parcelable, Cloneable {
     public static final String ACTION_SIGNAL_DBM_CHANGED = "com.android.intent.action.DBM_SIGNAL_CHANGED";
 
     /**
+    * Broadcast Action: Lockscreen Wallpaper Changed
+    * @hide
+    */
+    public static final String LOCKSCREEN_WALLPAPER_INFO = "com.android.lockscreenwallpaper.CHANGED";
+
+    /**
      * Represents a shortcut/live folder icon resource.
      *
      * @see Intent#ACTION_CREATE_SHORTCUT

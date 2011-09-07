@@ -1181,7 +1181,28 @@ public final class Settings {
 	public static final String OVERSCROLL_COLOR = "overscroll_color";
 	public static final String CUSTOM_SEARCH_APP = "custom_search_app";
 	public static final String LOCKSCREEN_ROTARY_UNLOCK_DOWN = "lockscreen_rotary_unlock_down";
+	public static final String KEY_CITY_NAME = "CITY_NAME";
+	public static final String KEY_UPDATED_TIME = "aw_daemon_service_key_updated_time";
+	public static final String KEY_CURRENT_TEMP = "aw_daemon_service_key_current_temp";
+	public static final String KEY_TEMP_SCALE = "aw_daemon_service_key_temp_scale";
+	public static final String KEY_ICON_NUM = "aw_daemon_service_key_icon_num";
+	public static final String LOCKSCREEN_CLOCK_ALIGN = "lockscreen_clock_align";
+	public static final String LOCKSCREEN_SHOW_INFO = "lockscreen_show_info";
+	public static final String KEY_LOCATION_CODE = "aw_daemon_service_key_loc_code";
+	public static final String KEY_HIGH_TEMP = "aw_daemon_service_key_high_temp";
+	public static final String KEY_LOW_TEMP = "aw_daemon_service_key_low_temp";
+	public static final String KEY_WEATHER_TEXT = "aw_daemon_service_key_weather_text";
+	public static final String KEY_AUTO_REFRESH_INTERVAL = "aw_daemon_service_key_autorefresh_interval";
+	public static final String KEY_DAEMON_ON_OFF = "aw_daemon_service_key_service_status";
+	public static final String NUM_RECENT_APPS = "num_recent_apps";
 	
+        /**
+         * Whether to allow killing of the foreground process by long-pressing
+         * the device's BACK button.
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_on_longpress_back";
+
         /**
          * A comma separated list of radios that should to be disabled when airplane mode
          * is on, but can be manually reenabled by the user.  For example, if RADIO_WIFI is

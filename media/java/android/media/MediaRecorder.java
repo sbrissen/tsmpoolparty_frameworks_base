@@ -104,6 +104,49 @@ public class MediaRecorder
      * @param c the Camera to use for recording
      */
     public native void setCamera(Camera c);
+	
+	/**
+	* For TW Camera Start:  - sbrissen
+	*/
+	public native void setDurationInterval(int interval)
+		throws IllegalStateException;
+	
+	
+	public native void setFileSizeInterval(long size)
+		throws IllegalStateException;
+
+	public void setZoom(int zoomLevel){
+	  if(zoomLevel <= 0){
+	    throw new IllegalArgumentException("zoom level is not positive");
+	  }else{
+	    try{
+	      Object[] zoomArray = new Object[1];
+	      zoomArray[0] = Integer.valueOf(zoomLevel);
+	      setParameter(String.format("zoom=%d",zoomArray[0]));
+	    }catch(IllegalStateException ise){
+	    }
+	  }
+	}
+
+	public native void pause()
+	      throws IllegalStateException;
+
+	public native void resume()
+	      throws IllegalStateException;
+
+	public static final int MEDIA_RECORDER_INFO_DURATION_PROGRESS = 0x326;
+	public static final int MEDIA_RECORDER_INFO_COMPLETION_STATUS = 0x322;
+	public static final int MEDIA_RECORDER_INFO_FILESIZE_PROGRESS = 0x325;
+	public static final int MEDIA_RECORDER_INFO_PROGRESS_FRAME_STATUS = 0x323;
+	public static final int MEDIA_RECORDER_INFO_PROGRESS_TIME_STATUS = 0x324;
+
+	private native void _setAudioSource(int source)
+	    throws IllegalStateException;
+	    
+		
+	/**
+	* For TW Camera End.
+	*/
 
     /**
      * Sets a Surface to show a preview of recorded media (video). Calls this

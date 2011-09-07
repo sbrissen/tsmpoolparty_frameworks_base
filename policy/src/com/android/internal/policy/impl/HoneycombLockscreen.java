@@ -20,6 +20,7 @@ import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.UnlockRing;
+import com.android.internal.widget.DigitalClock;
 
 import org.apache.harmony.luni.internal.net.www.protocol.ftp.Handler;
 
@@ -39,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,6 +49,7 @@ import com.android.internal.policy.impl.LockscreenWallpaperUpdater;
 import android.widget.*;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import com.android.internal.policy.impl.LockscreenInfo;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -90,6 +93,9 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     private TextView mStatus1;
 
     private TextView mStatus2;
+    private LinearLayout mBoxLayout;
+    private LockscreenInfo mLockscreenInfo;
+    private DigitalClock mClock;
 
     private TextView mScreenLocked;
 
@@ -149,6 +155,12 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
+
+    private boolean mShowingInfo = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SHOW_INFO, 0) == 1);
+
+    private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
 
 
     /**
@@ -270,10 +282,27 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 	mCustomMsg.setSelected(true);
 	mCustomMsg.setText(r);
 	mCustomMsg.setTextColor(0xffffffff);	
-
+        mClock = (DigitalClock) findViewById(R.id.time);
         mDate = (TextView) findViewById(R.id.date);
         mStatus1 = (TextView) findViewById(R.id.status1);
         mStatus2 = (TextView) findViewById(R.id.status2);
+
+	if(mClockAlign == 0){
+	  mClock.setGravity(Gravity.LEFT);  
+	  mDate.setGravity(Gravity.LEFT);
+	  mStatus1.setGravity(Gravity.LEFT);
+	  mStatus2.setGravity(Gravity.LEFT);
+	}else if(mClockAlign == 1){
+	  mClock.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mDate.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus1.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus2.setGravity(Gravity.CENTER_HORIZONTAL);
+	}else if(mClockAlign == 2){
+	  mClock.setGravity(Gravity.RIGHT);
+	  mDate.setGravity(Gravity.RIGHT);
+	  mStatus1.setGravity(Gravity.RIGHT);
+	  mStatus2.setGravity(Gravity.RIGHT);
+	}
 
         mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
         mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause);
@@ -287,6 +316,13 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(context);
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
 	mMainLayout.addView(mLockscreenWallpaperUpdater,0);
+
+	mLockscreenInfo = new LockscreenInfo(context,updateMonitor,configuration);
+	mBoxLayout = (LinearLayout) findViewById(R.id.lock_box);
+	
+	if(mShowingInfo){
+	  mBoxLayout.addView(mLockscreenInfo);
+	}
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
@@ -538,7 +574,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     }
 
     private void refreshBatteryStringAndIcon() {
-        if (!mShowingBatteryInfo && !mLockAlwaysBattery) {
+        if (!mShowingBatteryInfo && !mLockAlwaysBattery || mShowingInfo) {
             mCharging = null;
             return;
         }
@@ -794,6 +830,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
         mSelector.enableUnlockMode();
 	mLockscreenWallpaperUpdater.onResume();
+	mLockscreenInfo.onResume();
     }
 
     /** {@inheritDoc} */
@@ -802,6 +839,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mLockPatternUtils = null;
         mUpdateMonitor = null;
         mCallback = null;
+	mLockscreenInfo.cleanUp();
     }
 
     /** {@inheritDoc} */

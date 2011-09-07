@@ -30,6 +30,8 @@ import android.graphics.ImageFormat;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.content.pm.PackageManager;
+import android.content.Context;
 
 /**
  * The Camera class is used to set image capture settings, start/stop preview,
@@ -138,7 +140,7 @@ public class Camera {
     private ErrorCallback mErrorCallback;
     private boolean mOneShot;
     private boolean mWithBuffer;
-
+	
     /**
      * Returns the number of physical cameras available on this device.
      */
@@ -273,6 +275,11 @@ public class Camera {
      */
     public final void release() {
         native_release();
+    }
+
+    /** For TW Camera         - sbrissen   */
+    public static boolean checkCameraEnabled(){
+      return true;
     }
 
     /**

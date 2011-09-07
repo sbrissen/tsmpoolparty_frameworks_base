@@ -20,6 +20,7 @@ import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.SlidingTab;
+import com.android.internal.widget.DigitalClock;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -30,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.*;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -45,6 +47,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
+import com.android.internal.policy.impl.LockscreenInfo;
 
 import java.util.Date;
 import java.io.File;
@@ -70,6 +73,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
     private TextView mCarrier;
     private TextView mCustomMsg;
     private SlidingTab mSelector;
+    private DigitalClock mClock;
     private TextView mTime;
     private TextView mDate;
     private TextView mStatus1;
@@ -79,6 +83,8 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
     private Button mEmergencyCallButton;
     private LockscreenWallpaperUpdater mLockscreenWallpaperUpdater;
     private RelativeLayout mMainLayout;
+    private LinearLayout mBoxLayout;
+    private LockscreenInfo mLockscreenInfo;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -120,6 +126,12 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
+
+    private boolean mShowingInfo = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SHOW_INFO, 0) == 1);
+
+    private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
 
     /**
      * The status of this lock screen.
@@ -237,10 +249,27 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 	mCustomMsg.setSelected(true);
 	mCustomMsg.setText(r);
 	mCustomMsg.setTextColor(0xffffffff);	
-
+        mClock = (DigitalClock) findViewById(R.id.time);
         mDate = (TextView) findViewById(R.id.date);
         mStatus1 = (TextView) findViewById(R.id.status1);
         mStatus2 = (TextView) findViewById(R.id.status2);
+
+	if(mClockAlign == 0){
+	  mClock.setGravity(Gravity.LEFT);  
+	  mDate.setGravity(Gravity.LEFT);
+	  mStatus1.setGravity(Gravity.LEFT);
+	  mStatus2.setGravity(Gravity.LEFT);
+	}else if(mClockAlign == 1){
+	  mClock.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mDate.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus1.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus2.setGravity(Gravity.CENTER_HORIZONTAL);
+	}else if(mClockAlign == 2){
+	  mClock.setGravity(Gravity.RIGHT);
+	  mDate.setGravity(Gravity.RIGHT);
+	  mStatus1.setGravity(Gravity.RIGHT);
+	  mStatus2.setGravity(Gravity.RIGHT);
+	}
 
         mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
         mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause);
@@ -255,6 +284,14 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(mContext);
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
 	mMainLayout.addView(mLockscreenWallpaperUpdater,0x0);
+
+	mLockscreenInfo = new LockscreenInfo(context,updateMonitor,configuration);
+	mBoxLayout = (LinearLayout) findViewById(R.id.lock_box);
+	
+	if(mShowingInfo){
+	  mBoxLayout.addView(mLockscreenInfo);
+	}
+	
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
@@ -497,7 +534,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
     }
 
     private void refreshBatteryStringAndIcon() {
-        if (!mShowingBatteryInfo && !mLockAlwaysBattery) {
+        if (!mShowingBatteryInfo && !mLockAlwaysBattery || mShowingInfo) {
             mCharging = null;
             return;
         }
@@ -797,6 +834,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         resetStatusInfo(mUpdateMonitor);
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
 		mLockscreenWallpaperUpdater.onResume();
+	mLockscreenInfo.onResume();
     }
 
     /** {@inheritDoc} */
@@ -805,6 +843,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         mLockPatternUtils = null;
         mUpdateMonitor = null;
         mCallback = null;
+	mLockscreenInfo.cleanUp();
     }
 
     /** {@inheritDoc} */

@@ -152,6 +152,11 @@ public class Environment {
         return EXTERNAL_STORAGE_DIRECTORY;
     }
 
+    /* For TW Camera     - sbrissen    */
+        public static File getExternalStorageDirectorySd() {
+        return EXTERNAL_STORAGE_DIRECTORY;
+    }
+
     /**
      * Standard directory in which to place any audio files that should be
      * in the regular list of music for the user.
@@ -320,8 +325,31 @@ public class Environment {
     public static File getDownloadCacheDirectory() {
         return DOWNLOAD_CACHE_DIRECTORY;
     }
+	
+	/* For TW Camera     - sbrissen   */
+	
+	public static boolean getExternalMemoryStatus(){
+		boolean mounted = false;
+		String statusExternal = getExternalStorageStateSd();
+		if(statusExternal.equals("mounted")){
+			mounted = true;
+		}
+		return mounted;
+	}
+	
+	public static String getExternalStorageStateSd(){
+        try {
+            if (mMntSvc == null) {
+                mMntSvc = IMountService.Stub.asInterface(ServiceManager
+                                                         .getService("mount"));
+            }
+            return mMntSvc.getVolumeState(getExternalStorageDirectory().toString());
+        } catch (Exception rex) {
+            return Environment.MEDIA_REMOVED;
+        }
+    }
 
-    /**
+     /**
      * getExternalStorageState() returns MEDIA_REMOVED if the media is not present. 
      */
     public static final String MEDIA_REMOVED = "removed";

@@ -34,6 +34,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.*;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -50,6 +51,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import com.android.internal.policy.impl.LockscreenInfo;
 
 import java.util.Date;
 import java.io.File;
@@ -87,6 +89,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private Button mEmergencyCallButton;
     private LockscreenWallpaperUpdater mLockscreenWallpaperUpdater;
     private RelativeLayout mMainLayout;
+    private LinearLayout mBoxLayout;
+    private LockscreenInfo mLockscreenInfo;
+    private RelativeLayout mRoot;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -120,6 +125,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private java.text.DateFormat mTimeFormat;
     private boolean mEnableMenuKeyInLockScreen;
 
+    private boolean mShowingInfo = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SHOW_INFO, 0) == 1);
+
     private boolean mLockAlwaysBattery = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_BATTERY_INFO, 0) == 1);
 
@@ -139,6 +147,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     private String mCustomAppActivity = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
+
+    private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
 
     private boolean mUseRotaryLockscreen = (mLockscreenStyle == 1);
 
@@ -271,6 +282,23 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mDate = (TextView) findViewById(R.id.date);
         mStatus1 = (TextView) findViewById(R.id.status1);
         mStatus2 = (TextView) findViewById(R.id.status2);
+	
+	if(mClockAlign == 0){
+	  mClock.setGravity(Gravity.LEFT);  
+	  mDate.setGravity(Gravity.LEFT);
+	  mStatus1.setGravity(Gravity.LEFT);
+	  mStatus2.setGravity(Gravity.LEFT);
+	}else if(mClockAlign == 1){
+	  mClock.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mDate.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus1.setGravity(Gravity.CENTER_HORIZONTAL);
+	  mStatus2.setGravity(Gravity.CENTER_HORIZONTAL);
+	}else if(mClockAlign == 2){
+	  mClock.setGravity(Gravity.RIGHT);
+	  mDate.setGravity(Gravity.RIGHT);
+	  mStatus1.setGravity(Gravity.RIGHT);
+	  mStatus2.setGravity(Gravity.RIGHT);
+	}
 
         mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
         mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause);
@@ -283,6 +311,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(context);
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
 	mMainLayout.addView(mLockscreenWallpaperUpdater,0);
+
+	
+	mLockscreenInfo = new LockscreenInfo(context,updateMonitor,configuration);
+	mBoxLayout = (LinearLayout) findViewById(R.id.lock_box);
+	
+	if(mShowingInfo){
+	  mBoxLayout.addView(mLockscreenInfo);
+	}
+	
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
@@ -579,10 +616,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         refreshBatteryStringAndIcon();
         updateStatusLines();
+	mLockscreenInfo.onResume();
     }
 
     private void refreshBatteryStringAndIcon() {
-        if (!mShowingBatteryInfo && !mLockAlwaysBattery) {
+        if (!mShowingBatteryInfo && !mLockAlwaysBattery || mShowingInfo) {
             mCharging = null;
             return;
         }
@@ -665,7 +703,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             mStatus2.setVisibility(View.INVISIBLE);
 
             mStatus1.setText(mCharging);
-            mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
+	    mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
+	    
         } else if (mNextAlarm != null && mCharging == null) {
             // next alarm only
             mStatus1.setVisibility(View.VISIBLE);
@@ -897,6 +936,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         resetStatusInfo(mUpdateMonitor);
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
 		mLockscreenWallpaperUpdater.onResume();
+	mLockscreenInfo.onResume();
     }
 
     /** {@inheritDoc} */
@@ -906,6 +946,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mUpdateMonitor = null;
         mCallback = null;
 	mLockscreenWallpaperUpdater.cleanUp();
+	mLockscreenInfo.cleanUp();
     }
 
     /** {@inheritDoc} */

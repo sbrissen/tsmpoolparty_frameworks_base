@@ -96,6 +96,10 @@
     <color name="keyguard_text_color_soundoff">#ffffff</color>
     <color name="keyguard_text_color_soundon">#e69310</color>
     <color name="keyguard_text_color_decline">#fe0a5a</color>
+	
+    <color name="unlock_album_image_background_normal">#ff3c3c3c</color>
+    <color name="unlock_album_image_background_focus">#ff0883d3</color>
+    <color name="unlock_album_image_background_press">#ff3abcff</color>
 
 </resources>
 

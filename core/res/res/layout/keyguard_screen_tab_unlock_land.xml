@@ -74,7 +74,7 @@
            />
 
         <com.android.internal.widget.DigitalClock android:id="@+id/time"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/carrier"
             android:layout_marginTop="56dip"
@@ -116,7 +116,7 @@
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/time"
             android:layout_marginTop="6dip"
@@ -125,7 +125,7 @@
 
         <TextView
             android:id="@+id/status1"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/date"
             android:layout_marginTop="6dip"
@@ -135,13 +135,21 @@
 
         <TextView
             android:id="@+id/status2"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/status1"
             android:layout_marginTop="6dip"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:drawablePadding="4dip"
             />
+			
+			    <LinearLayout 
+	android:orientation="vertical" 
+	android:id="@+id/lock_box" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:layout_below="@id/date"
+	/>
 
         <TextView
             android:id="@+id/screenLocked"

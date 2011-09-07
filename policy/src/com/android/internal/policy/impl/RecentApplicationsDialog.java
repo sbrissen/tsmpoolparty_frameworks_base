@@ -37,6 +37,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.provider.Settings;
 
 import java.util.List;
 
@@ -47,8 +48,10 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
 
     static private StatusBarManager sStatusBar;
 
-    private static final int NUM_BUTTONS = 8;
-    private static final int MAX_RECENT_TASKS = NUM_BUTTONS * 2;    // allow for some discards
+    //private static final int NUM_BUTTONS = 8;
+    private int NUM_BUTTONS = (Settings.System.getInt(getContext().getContentResolver(),
+            Settings.System.NUM_RECENT_APPS, 8));
+    private int MAX_RECENT_TASKS = NUM_BUTTONS * 2;    // allow for some discards
 
     final TextView[] mIcons = new TextView[NUM_BUTTONS];
     View mNoAppsText;
@@ -77,7 +80,7 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
     /**
      * We create the recent applications dialog just once, and it stays around (hidden)
      * until activated by the user.
-     *
+     * 
      * @see PhoneWindowManager#showRecentAppsDialog
      */
     @Override
@@ -105,6 +108,12 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
         window.setAttributes(params);
         window.setFlags(0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
+      if(NUM_BUTTONS == 4){
+        mIcons[0] = (TextView)findViewById(com.android.internal.R.id.button0);
+        mIcons[1] = (TextView)findViewById(com.android.internal.R.id.button1);
+        mIcons[2] = (TextView)findViewById(com.android.internal.R.id.button2);
+        mIcons[3] = (TextView)findViewById(com.android.internal.R.id.button3);
+      }else if(NUM_BUTTONS == 8){
         mIcons[0] = (TextView)findViewById(com.android.internal.R.id.button0);
         mIcons[1] = (TextView)findViewById(com.android.internal.R.id.button1);
         mIcons[2] = (TextView)findViewById(com.android.internal.R.id.button2);
@@ -113,6 +122,37 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
         mIcons[5] = (TextView)findViewById(com.android.internal.R.id.button5);
         mIcons[6] = (TextView)findViewById(com.android.internal.R.id.button6);
         mIcons[7] = (TextView)findViewById(com.android.internal.R.id.button7);
+      }else if(NUM_BUTTONS == 12){
+        mIcons[0] = (TextView)findViewById(com.android.internal.R.id.button0);
+        mIcons[1] = (TextView)findViewById(com.android.internal.R.id.button1);
+        mIcons[2] = (TextView)findViewById(com.android.internal.R.id.button2);
+        mIcons[3] = (TextView)findViewById(com.android.internal.R.id.button3);
+        mIcons[4] = (TextView)findViewById(com.android.internal.R.id.button4);
+        mIcons[5] = (TextView)findViewById(com.android.internal.R.id.button5);
+        mIcons[6] = (TextView)findViewById(com.android.internal.R.id.button6);
+        mIcons[7] = (TextView)findViewById(com.android.internal.R.id.button7);
+	mIcons[8] = (TextView)findViewById(com.android.internal.R.id.button8);
+	mIcons[9] = (TextView)findViewById(com.android.internal.R.id.button9);
+	mIcons[10] = (TextView)findViewById(com.android.internal.R.id.button10);
+	mIcons[11] = (TextView)findViewById(com.android.internal.R.id.button11);
+      }else if(NUM_BUTTONS == 16){
+        mIcons[0] = (TextView)findViewById(com.android.internal.R.id.button0);
+        mIcons[1] = (TextView)findViewById(com.android.internal.R.id.button1);
+        mIcons[2] = (TextView)findViewById(com.android.internal.R.id.button2);
+        mIcons[3] = (TextView)findViewById(com.android.internal.R.id.button3);
+        mIcons[4] = (TextView)findViewById(com.android.internal.R.id.button4);
+        mIcons[5] = (TextView)findViewById(com.android.internal.R.id.button5);
+        mIcons[6] = (TextView)findViewById(com.android.internal.R.id.button6);
+        mIcons[7] = (TextView)findViewById(com.android.internal.R.id.button7);
+	mIcons[8] = (TextView)findViewById(com.android.internal.R.id.button8);
+	mIcons[9] = (TextView)findViewById(com.android.internal.R.id.button9);
+	mIcons[10] = (TextView)findViewById(com.android.internal.R.id.button10);
+	mIcons[11] = (TextView)findViewById(com.android.internal.R.id.button11);
+	mIcons[12] = (TextView)findViewById(com.android.internal.R.id.button12);
+	mIcons[13] = (TextView)findViewById(com.android.internal.R.id.button13);
+	mIcons[14] = (TextView)findViewById(com.android.internal.R.id.button14);
+	mIcons[15] = (TextView)findViewById(com.android.internal.R.id.button15);
+      }
         mNoAppsText = findViewById(com.android.internal.R.id.no_applications_message);
 
         for (TextView b: mIcons) {

@@ -2385,6 +2385,9 @@
     
     <string name="lockscreen_discharging">Battery (<xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g>)</string>
 	<string name="lockscreen_phone_label">Phone</string>
-	<string name="lockscreen_tsm_label">TSM</string>
-
+	<string name="lockscreen_tsm_label">TSM</string>	
+	<string name="lockscreen_one_missed_call_count">1 missed call</string>
+    <string name="lockscreen_one_unread_message_count">1 unread message</string>
+    <string name="lockscreen_n_missed_calls_count">%1$d missed calls</string>
+    <string name="lockscreen_n_unread_messages_count">%1$d unread messages</string>
 </resources>

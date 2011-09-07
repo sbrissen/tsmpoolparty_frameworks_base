@@ -136,7 +136,17 @@
 
         <!-- Drawable to use for single choice indicators. -->
         <attr name="listChoiceIndicatorSingle" format="reference" />
-
+		
+		<attr name="SoftkeyItemStyle" format="reference" />
+		
+    <attr name="SoftkeyItemType" format="integer">
+        <enum name="text" value="0" />
+        <enum name="text_and_image" value="2" />
+        <enum name="image" value="1" />
+        <enum name="space" value="3" />
+    </attr>
+    <attr name="SoftkeyItemText" format="reference" />
+    <attr name="SoftkeyItemImage" format="reference" />
         <!-- ============= -->
         <!-- Button styles -->
         <!-- ============= -->
@@ -3713,6 +3723,12 @@
          Described here are the attributes that can be included in that tag. -->
     <declare-styleable name="RecognitionService">
         <attr name="settingsActivity" />
+    </declare-styleable>
+	
+    <declare-styleable name="SoftkeyItem">
+		<attr name="SoftkeyItemText"/>
+		<attr name="SoftkeyItemImage"/>
+		<attr name="SoftkeyItemType"/>
     </declare-styleable>
 
 </resources>

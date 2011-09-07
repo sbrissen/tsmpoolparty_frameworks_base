@@ -84,6 +84,8 @@ public class SlidingTab extends ViewGroup {
     private Slider mOtherSlider;
     private boolean mAnimating;
     private Rect mTmpRect;
+    private boolean mShowLeftSlider;
+    private boolean mShowRightSlider;
 
     /**
      * Listener used to reset the view when the current animation completes.
@@ -174,6 +176,8 @@ public class SlidingTab extends ViewGroup {
         private final ImageView tab;
         private final TextView text;
         private final ImageView target;
+	private final TextView iconText;
+	private final ImageView icon;
         private int currentState = STATE_NORMAL;
         private int alignment = ALIGN_UNKNOWN;
         private int alignment_value;
@@ -210,14 +214,36 @@ public class SlidingTab extends ViewGroup {
                     new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             target.setVisibility(View.INVISIBLE);
 
+	    icon = new ImageView(parent.getContext());
+	    icon.setScaleType(ScaleType.CENTER);
+	    icon.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+
+	    iconText = new TextView(parent.getContext());
+	    iconText.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+	    iconText.setTextAppearance(parent.getContext(), R.style.TextAppearance_SlidingTabIconText);
+
             parent.addView(target); // this needs to be first - relies on painter's algorithm
             parent.addView(tab);
             parent.addView(text);
+	    parent.addView(icon);
+	    parent.addView(iconText);
         }
 
         void setIcon(int iconId) {
             tab.setImageResource(iconId);
         }
+
+	void setIconText(CharSequence CharSeq){
+	    iconText.setText(CharSeq);
+	}
+
+	void setIconWithText(int iconId){
+	    icon.setImageResource(iconId);
+	}
+
+	void setHintText(CharSequence CharSeq){
+	    text.setText(CharSeq);
+	}
 
         void setTabBackgroundResource(int tabId) {
             tab.setBackgroundResource(tabId);
@@ -261,6 +287,14 @@ public class SlidingTab extends ViewGroup {
                 text.startAnimation(trans);
             }
         }
+
+	public void setInvisible(){
+	    text.setVisibility(View.INVISIBLE);
+	    tab.setVisibility(View.INVISIBLE);
+	    icon.setVisibility(View.INVISIBLE);
+	    iconText.setVisibility(View.INVISIBLE);
+	    target.setVisibility(View.INVISIBLE);
+	}
 
         void setState(int state) {
             text.setPressed(state == STATE_PRESSED);
@@ -755,6 +789,16 @@ public class SlidingTab extends ViewGroup {
         mLeftSlider.updateDrawableStates();
     }
 
+    public void setLeftTabResources(int iconId, int targetId, int barId, int tabId, CharSequence iconTextId){
+      mLeftSlider.setIcon(0);
+      mLeftSlider.setTarget(targetId);
+      mLeftSlider.setBarBackgroundResource(barId);
+      mLeftSlider.setTabBackgroundResource(tabId);
+      mLeftSlider.updateDrawableStates();  
+      mLeftSlider.setIconText(iconTextId);
+      mLeftSlider.setIconWithText(iconId);
+    }
+
     /**
      * Sets the left handle hint text to a given resource string.
      *
@@ -764,6 +808,18 @@ public class SlidingTab extends ViewGroup {
         if (isHorizontal()) {
             mLeftSlider.setHintText(resId);
         }
+    }
+
+    public void setLeftHintText(CharSequence CharSeq){
+      if(isHorizontal()){
+	mLeftSlider.setHintText(CharSeq);
+      }
+    }
+
+    public void setLeftIconText(CharSequence CharSeq){
+      if(isHorizontal()){
+	mLeftSlider.setIconText(CharSeq);
+      }
     }
 
     /**
@@ -785,6 +841,16 @@ public class SlidingTab extends ViewGroup {
         mRightSlider.updateDrawableStates();
     }
 
+    public void setRightTabResources(int iconId, int targetId, int barId, int tabId, CharSequence iconTextId){
+      mRightSlider.setIcon(0);
+      mRightSlider.setTarget(targetId);
+      mRightSlider.setBarBackgroundResource(barId);
+      mRightSlider.setTabBackgroundResource(tabId);
+      mRightSlider.updateDrawableStates();  
+      mRightSlider.setIconText(iconTextId);
+      mRightSlider.setIconWithText(iconId);
+    }
+
     /**
      * Sets the left handle hint text to a given resource string.
      *
@@ -794,6 +860,18 @@ public class SlidingTab extends ViewGroup {
         if (isHorizontal()) {
             mRightSlider.setHintText(resId);
         }
+    }
+
+    public void setRightHintText(CharSequence CharSeq){
+      if(isHorizontal()){
+	mRightSlider.setHintText(CharSeq);
+      }
+    }
+
+    public void setRightIconText(CharSequence CharSeq){
+      if(isHorizontal()){
+	mRightSlider.setIconText(CharSeq);
+      }
     }
 
     public void setHoldAfterTrigger(boolean holdLeft, boolean holdRight) {
@@ -848,4 +926,25 @@ public class SlidingTab extends ViewGroup {
     private void log(String msg) {
         Log.d(LOG_TAG, msg);
     }
+
+    public void setRightVisibility(int visibility){
+      if(visibility != 0x4){ 
+	mRightSlider.show(true);
+	mShowRightSlider = true;
+      }else{
+	mRightSlider.setInvisible();
+	mShowRightSlider = false;
+      }
+    }
+
+    public void setLeftVisibility(int visibility){
+      if(visibility != 0x4){ 
+	mLeftSlider.show(true);
+	mShowLeftSlider = true;
+      }else{
+	mLeftSlider.setInvisible();
+	mShowLeftSlider = false;
+      }
+    }
+	
 }

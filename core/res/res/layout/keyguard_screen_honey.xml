@@ -62,7 +62,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 	<!-- time and date -->
 	<com.android.internal.widget.DigitalClock
 		android:id="@+id/time"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/carrier"
 		android:layout_marginTop="32dip"
@@ -102,7 +102,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 
 	<TextView
 		android:id="@+id/date"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/time"
 		android:layout_marginLeft="24dip"
@@ -110,7 +110,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 
 	<TextView
 		android:id="@+id/status1"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/date"
 		android:layout_marginTop="4dip"
@@ -120,13 +120,21 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 
 	<TextView
 		android:id="@+id/status2"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/status1"
 		android:layout_marginTop="4dip"
 		android:layout_marginLeft="24dip"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:drawablePadding="4dip" />
+		
+		    <LinearLayout 
+	android:orientation="vertical" 
+	android:id="@+id/lock_box" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:layout_below="@id/date"
+	/>
 
 	<com.android.internal.widget.UnlockRing
 		android:id="@+id/unlock_ring"

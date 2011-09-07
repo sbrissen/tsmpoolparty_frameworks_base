@@ -874,4 +874,25 @@
         <item name="windowEnterAnimation">@android:anim/fade_in</item>
         <item name="windowExitAnimation">@android:anim/fade_out</item>
     </style>
+	
+    <style name="TextAppearance.SlidingTabIconText" parent="@style/TextAppearance">
+        <item name="textSize">18.0sp</item>
+        <item name="textStyle">normal</item>
+        <item name="textColor">#ffebebeb</item>
+    </style>
+
+	<style name="TextAppearanceSoftkey">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/textappearance_softkey</item>
+    </style>
+	
+    <style name="SoftkeyItemStyle" parent="@android:style/Widget">
+        <item name="android:textAppearance">@style/TextAppearanceSoftkey</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">0.0dip</item>
+        <item name="android:paddingBottom">0.0dip</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:maxLines">2</item>
+    </style>
 </resources>

@@ -1319,6 +1319,8 @@ public class MediaScanner
         return true;
     }
 
+
+
     private void processM3uPlayList(String path, String playListDirectory, Uri uri, ContentValues values) {
         BufferedReader reader = null;
         try {
