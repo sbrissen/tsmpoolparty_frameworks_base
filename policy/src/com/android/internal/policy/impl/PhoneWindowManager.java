@@ -1263,8 +1263,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             WindowManager.LayoutParams attrs = win != null ? win.getAttrs() : null;
             if (attrs != null) {
                 final int type = attrs.type;
-                if (type == WindowManager.LayoutParams.TYPE_KEYGUARD
+		if (type == WindowManager.LayoutParams.TYPE_KEYGUARD
                         || type == WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG) {
+		    if(mKeyguardMediator.isShowingAndNotHidden()){
+			  mKeyguardMediator.setTorch(down);
+			  if((repeatCount % 0xa) == 0){
+			    mKeyguardMediator.pokeWakelock();
+			  }
+		    }
                     // the "app" is keyguard, so give it the key
                     return false;
                 }

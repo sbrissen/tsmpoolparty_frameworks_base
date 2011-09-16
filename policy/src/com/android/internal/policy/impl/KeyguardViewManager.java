@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 /**
  * Manages creating, showing, hiding and resetting the keyguard.  Calls back
@@ -53,6 +54,7 @@ public class KeyguardViewManager implements KeyguardWindowController {
     private KeyguardViewBase mKeyguardView;
 
     private boolean mScreenOn = false;
+    private ImageView mTorchCover;
 
     /**
      * @param context Used to create views.
@@ -85,6 +87,23 @@ public class KeyguardViewManager implements KeyguardWindowController {
             super.dispatchDraw(canvas);
             mCallback.keyguardDoneDrawing();
         }
+    }
+
+    /** Lockscreen Torch from MIUI   - sbrissen */
+    public synchronized void enableTorchCover(boolean enable){
+      try{
+	if(mTorchCover == null){
+	  mTorchCover = new ImageView(mContext);
+	  mTorchCover.setClickable(true);
+	  mTorchCover.setImageResource(R.drawable.lock_screen_torch_cover);
+	  mTorchCover.setScaleType(ImageView.ScaleType.CENTER_CROP);
+	  mTorchCover.setLayoutParams(new FrameLayout.LayoutParams(-1,-1));
+	}else if(enable){
+	  mKeyguardHost.addView(mTorchCover);
+	}else{
+	  mKeyguardHost.removeView(mTorchCover);
+	}
+      }catch(Exception e){}
     }
 
     /**

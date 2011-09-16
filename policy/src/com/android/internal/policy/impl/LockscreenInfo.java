@@ -1,3 +1,14 @@
+/*****************************************************************************************************
+/
+/
+/	Lockscreen Information Widget:
+/		-Displays Weather, Battery Info, and Alarm Info on Lockscreen
+/
+/	This was modeled from the SGS2 Weather widget
+/
+/	Converted/Written By: Scott Brissenden
+*******************************************************************************************************/
+
 package com.android.internal.policy.impl;
 
 import android.widget.RelativeLayout;
@@ -10,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.content.Intent;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor;
+import com.android.internal.widget.LockPatternUtils;
 import android.content.res.Configuration;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -52,6 +64,9 @@ public class LockscreenInfo extends LinearLayout {
   private BroadcastReceiver mBroadcastReceiver;
   private String mCharging;
   private Drawable mChargingIcon;
+  private String mNextAlarm;
+  private Drawable mAlarmIcon;
+  private TextView mAlarmText;
   private RelativeLayout mChargingLayout;
   private TextView mChargingText;
   private Handler mHandler;
@@ -67,9 +82,11 @@ public class LockscreenInfo extends LinearLayout {
   private TextView mTempLo;
   private int mWeatherDaemonState;
   private ImageView mWeatherIcon;
+  private Drawable mWeatherIcon2;
   private RelativeLayout mWeatherLayout;
   private TextView mWeatherTemperature;
   private Context mContext;
+  private LockPatternUtils mLockPatternUtils;
 
   private boolean mLockAlwaysBattery = (Settings.System.getInt(getContext().getContentResolver(),
             Settings.System.LOCKSCREEN_BATTERY_INFO, 0) == 1);
@@ -77,11 +94,12 @@ public class LockscreenInfo extends LinearLayout {
   private boolean mShowingInfo = (Settings.System.getInt(getContext().getContentResolver(),
             Settings.System.LOCKSCREEN_SHOW_INFO, 0) == 1);
 
-  public LockscreenInfo(Context context,KeyguardUpdateMonitor updateMonitor,Configuration configuration){
+  public LockscreenInfo(Context context,KeyguardUpdateMonitor updateMonitor,Configuration configuration, LockPatternUtils lockPatternUtils){
     super(context);
 
     mBatteryLevel = 0x64;
     mLayoutPosition = 0x2;
+    mLockPatternUtils = lockPatternUtils;
 
     LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -96,6 +114,7 @@ public class LockscreenInfo extends LinearLayout {
     mSpace_02 = (LinearLayout) findViewById(R.id.temp_clockspace_02);
     mSpace_01.setVisibility(0x8);
     mSpace_02.setVisibility(0x8);
+    mAlarmText = (TextView) findViewById(R.id.alarm_text);
     mWeatherText = (TextView) findViewById(R.id.weather_text);
     mWeatherTemperature = (TextView) findViewById(R.id.weather_temp);
     mWeatherIcon = (ImageView) findViewById(R.id.weather_icon);
@@ -193,6 +212,7 @@ public class LockscreenInfo extends LinearLayout {
     mWeatherDaemonState = daemonState;
     setInfoTempLayout(daemonState);
     updateChargingInfo();
+    refreshAlarmDisplay();
     setWeatherInfoVisibility(daemonState);
   }
 
@@ -236,6 +256,15 @@ public class LockscreenInfo extends LinearLayout {
                 mCharging = getContext().getString(R.string.lockscreen_discharging, mBatteryLevel);
             }
         }
+    }
+
+    private void refreshAlarmDisplay() {
+        String mNextAlarm = mLockPatternUtils.getNextAlarm();
+        if (mNextAlarm != null) {
+            mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
+	    mAlarmText.setText(mNextAlarm);
+	    mAlarmText.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon,null,null,null);
+        }        
     }
 
   private void setInfoTempLayout(int daemonState){
@@ -317,6 +346,7 @@ public class LockscreenInfo extends LinearLayout {
 
     int i = findDrawableId(iconNum);
     mWeatherIcon.setImageResource(unlock_weather_drawables[i]);
+    //mWeatherIcon2= getContext().getResources().getDrawable(unlock_weather_drawables[i]);
   }
 
   private void setWeatherInfoVisibility(int daemonState){
@@ -375,6 +405,7 @@ public class LockscreenInfo extends LinearLayout {
   public void onResume(){
     Log.d("InfoWidget","onResume()");
     updateChargingInfo();
+    refreshAlarmDisplay();
     setWeatherInfoVisibility(mWeatherDaemonState);
     setInfoTempLayout(mWeatherDaemonState);
   }
@@ -401,6 +432,7 @@ public class LockscreenInfo extends LinearLayout {
 	String tempLo = new StringBuilder().append("Lo: ").append(tmpLo).toString();
 	setWeatherIcon(iconNum);
     updateWeatherView(currentTemp,tempScale,iconNum,weatherText,tempHi,tempLo);
+    refreshAlarmDisplay();
   }
 }
 
