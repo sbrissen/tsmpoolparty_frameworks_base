@@ -1,12 +1,13 @@
 /*****************************************************************************************************
 /
 /
-/	Lockscreen Information Widget:
-/		-Displays Weather, Battery Info, and Alarm Info on Lockscreen
+/  Lockscreen Information Widget:
+/    -Displays Weather, Battery Info, and Alarm Info on Lockscreen
+     -REQUIRES: AccuWeatherDaemonService.apk
 /
-/	This was modeled from the SGS2 Weather widget
+/  This was modeled from the SGS2 Weather widget
 /
-/	Converted/Written By: Scott Brissenden
+/  Converted/Written By: Scott Brissenden
 *******************************************************************************************************/
 
 package com.android.internal.policy.impl;
@@ -64,9 +65,6 @@ public class LockscreenInfo extends LinearLayout {
   private BroadcastReceiver mBroadcastReceiver;
   private String mCharging;
   private Drawable mChargingIcon;
-  private String mNextAlarm;
-  private Drawable mAlarmIcon;
-  private TextView mAlarmText;
   private RelativeLayout mChargingLayout;
   private TextView mChargingText;
   private Handler mHandler;
@@ -82,10 +80,12 @@ public class LockscreenInfo extends LinearLayout {
   private TextView mTempLo;
   private int mWeatherDaemonState;
   private ImageView mWeatherIcon;
-  private Drawable mWeatherIcon2;
   private RelativeLayout mWeatherLayout;
   private TextView mWeatherTemperature;
   private Context mContext;
+  private String mNextAlarm;
+  private Drawable mAlarmIcon;
+  private TextView mAlarmText;
   private LockPatternUtils mLockPatternUtils;
 
   private boolean mLockAlwaysBattery = (Settings.System.getInt(getContext().getContentResolver(),
@@ -262,8 +262,8 @@ public class LockscreenInfo extends LinearLayout {
         String mNextAlarm = mLockPatternUtils.getNextAlarm();
         if (mNextAlarm != null) {
             mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
-	    mAlarmText.setText(mNextAlarm);
-	    mAlarmText.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon,null,null,null);
+      mAlarmText.setText(mNextAlarm);
+      mAlarmText.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon,null,null,null);
         }        
     }
 
@@ -346,7 +346,6 @@ public class LockscreenInfo extends LinearLayout {
 
     int i = findDrawableId(iconNum);
     mWeatherIcon.setImageResource(unlock_weather_drawables[i]);
-    //mWeatherIcon2= getContext().getResources().getDrawable(unlock_weather_drawables[i]);
   }
 
   private void setWeatherInfoVisibility(int daemonState){

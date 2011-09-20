@@ -289,6 +289,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of ENDCALL Button.  (See Settings.System.END_BUTTON_BEHAVIOR.)
     int mEndcallBehavior;
     boolean mVolumeWakeScreen;
+    boolean mLockscreenTorch;
 
     // Behavior of POWER button while in-call and screen on.
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
@@ -330,6 +331,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     "fancy_rotation_anim"), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_VOLUME_WAKE), false, this);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_TORCH), false, this);
             updateSettings();
         }
 
@@ -698,6 +701,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     "fancy_rotation_anim", 0) != 0 ? 0x80 : 0;
 	    mVolumeWakeScreen = (Settings.System.getInt(resolver,
 		    Settings.System.LOCKSCREEN_VOLUME_WAKE, 0) == 1);
+	    mLockscreenTorch = (Settings.System.getInt(resolver,
+		    Settings.System.LOCKSCREEN_TORCH, 0) ==1);
             int accelerometerDefault = Settings.System.getInt(resolver,
                     Settings.System.ACCELEROMETER_ROTATION, DEFAULT_ACCELEROMETER_ROTATION);
             if (mAccelerometerDefault != accelerometerDefault) {
@@ -1263,13 +1268,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             WindowManager.LayoutParams attrs = win != null ? win.getAttrs() : null;
             if (attrs != null) {
                 final int type = attrs.type;
-		if (type == WindowManager.LayoutParams.TYPE_KEYGUARD
+                if (type == WindowManager.LayoutParams.TYPE_KEYGUARD
                         || type == WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG) {
-		    if(mKeyguardMediator.isShowingAndNotHidden()){
-			  mKeyguardMediator.setTorch(down);
-			  if((repeatCount % 0xa) == 0){
-			    mKeyguardMediator.pokeWakelock();
-			  }
+		    if(mKeyguardMediator.isShowingAndNotHidden() && mLockscreenTorch){
+		      mKeyguardMediator.setTorch(down);
+		      if((repeatCount % 0xa) == 0){
+			mKeyguardMediator.pokeWakelock();
+		      }
 		    }
                     // the "app" is keyguard, so give it the key
                     return false;

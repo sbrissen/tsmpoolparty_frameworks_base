@@ -1,12 +1,12 @@
 /*****************************************************************************************************
 /
 /
-/	Lockscreen Wallpaper Updater:
-/		-Displays a user selected wallpaper (via TSMParts) on Lockscreen
+/  Lockscreen Wallpaper Updater:
+/    -Displays a user selected wallpaper (via TSMParts) on Lockscreen
 /
-/	This was modeled from the SGS2 Wallpaper Updater
+/  This was modeled from the SGS2 Wallpaper Updater
 /
-/	Converted/Written By: Scott Brissenden
+/  Converted/Written By: Scott Brissenden
 *******************************************************************************************************/
 
 package com.android.internal.policy.impl;

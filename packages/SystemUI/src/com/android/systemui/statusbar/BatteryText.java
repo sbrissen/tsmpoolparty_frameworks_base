@@ -29,6 +29,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 import android.graphics.*;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.CharacterStyle;
+import android.text.style.RelativeSizeSpan;
 
 /**
  * This widget displays the percentage of the battery as a number
@@ -141,8 +145,16 @@ public class BatteryText extends TextView {
      */
     final void updateBatteryText(Intent intent) {
         int level = intent.getIntExtra("level", 0);
-	String level2 = Integer.toString(level);
-	String BattText = level2.concat("%");
+	//String level2 = Integer.toString(level);
+	//String BattText = level2.concat("%");
+        String result = Integer.toString(level) + "%";
+
+        SpannableStringBuilder BattText = new SpannableStringBuilder(result);
+        int start = result.indexOf("%");
+
+        CharacterStyle style = new RelativeSizeSpan(0.7f);
+        BattText.setSpan(style, start, start + 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+            
         setText(BattText);
     }
 

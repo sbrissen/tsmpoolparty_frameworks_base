@@ -406,9 +406,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         //hide most items when we are in potrait lense mode
         mLensePortrait=(mUseLenseSquareLockscreen && mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE);
-        if (mLensePortrait) {
-            setLenseWidgetsVisibility(View.INVISIBLE);
+        if (mLensePortrait){
 	    mRotaryUnlockDown = false;
+            setLenseWidgetsVisibility(View.INVISIBLE);
 	}
 
         mRotarySelector.setOnDialTriggerListener(this);

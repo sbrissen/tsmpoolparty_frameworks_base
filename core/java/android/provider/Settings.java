@@ -1154,6 +1154,7 @@ public final class Settings {
 	public static final String LOCKSCREEN_CUSTOM_MSG = "lockscreen_custom_msg";
 	public static final String LOCKSCREEN_TIMEOUT_PREF = "lockscreen_timeout_pref";
 	public static final String LOCKSCREEN_BATTERY_INFO = "lockscreen_battery_info";
+	public static final String LOCKSCREEN_TORCH = "lockscreen_torch";
 	public static final String DBM_COLOR = "dbm_color";
 	public static final String STATUSBAR_CLOCK_POSITION = "statusbar_clock_position";
 	public static final String EXP_BRIGHTNESS_MODE = "pref_brightness_mode";

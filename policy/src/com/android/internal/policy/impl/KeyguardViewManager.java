@@ -92,17 +92,17 @@ public class KeyguardViewManager implements KeyguardWindowController {
     /** Lockscreen Torch from MIUI   - sbrissen */
     public synchronized void enableTorchCover(boolean enable){
       try{
-	if(mTorchCover == null){
-	  mTorchCover = new ImageView(mContext);
-	  mTorchCover.setClickable(true);
-	  mTorchCover.setImageResource(R.drawable.lock_screen_torch_cover);
-	  mTorchCover.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	  mTorchCover.setLayoutParams(new FrameLayout.LayoutParams(-1,-1));
-	}else if(enable){
-	  mKeyguardHost.addView(mTorchCover);
-	}else{
-	  mKeyguardHost.removeView(mTorchCover);
-	}
+	  if(mTorchCover == null){
+	    mTorchCover = new ImageView(mContext);
+	    mTorchCover.setClickable(true);
+	    mTorchCover.setImageResource(R.drawable.lock_screen_torch_cover);
+	    mTorchCover.setScaleType(ImageView.ScaleType.CENTER_CROP);
+	    mTorchCover.setLayoutParams(new FrameLayout.LayoutParams(-1,-1));
+	  }else if(enable){
+	    mKeyguardHost.addView(mTorchCover);
+	  }else{
+	    mKeyguardHost.removeView(mTorchCover);
+	  }
       }catch(Exception e){}
     }
 
