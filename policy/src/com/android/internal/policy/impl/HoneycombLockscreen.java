@@ -50,6 +50,7 @@ import android.widget.*;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import com.android.internal.policy.impl.LockscreenInfo;
+import com.android.internal.policy.impl.MusicWidget;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -95,6 +96,9 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     private TextView mStatus2;
     private LinearLayout mBoxLayout;
     private LockscreenInfo mLockscreenInfo;
+    private LinearLayout mMusicLayoutBottom;
+    private LinearLayout mMusicLayoutTop;
+    private MusicWidget mMusicWidget; 
     private DigitalClock mClock;
 
     private TextView mScreenLocked;
@@ -161,6 +165,15 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
     private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
+
+    private int mSgsMusicLoc = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SGSMUSIC_CONTROLS_LOC, 1));
+
+    private boolean mSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SGSMUSIC_CONTROLS, 1) == 1);
+
+    private boolean mAlwaysSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS, 0) == 1);
 
 
     /**
@@ -322,6 +335,18 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 	
 	if(mShowingInfo){
 	  mBoxLayout.addView(mLockscreenInfo);
+	}
+
+	mMusicWidget = new MusicWidget(context,callback,updateMonitor);
+	mMusicLayoutBottom = (LinearLayout) findViewById(R.id.musicwidget_bottom);
+	mMusicLayoutTop = (LinearLayout) findViewById(R.id.musicwidget_top);
+
+	if(mSgsMusicLoc == 1 && mSgsMusicControls){
+	  mMusicWidget.setTopLayout();
+	  mMusicLayoutTop.addView(mMusicWidget);
+	}else if(mSgsMusicLoc == 2 && mSgsMusicControls){
+	  mMusicWidget.setBottomLayout();
+	  mMusicLayoutBottom.addView(mMusicWidget);
 	}
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
@@ -500,7 +525,15 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     public void onGrabbedStateChange(View v, int grabbedState) {
         if (grabbedState != UnlockRing.OnTriggerListener.NO_HANDLE) {
             mCallback.pokeWakelock();
-        }
+        }else{
+	    if(mSgsMusicControls){
+		if(am.isMusicActive() || mAlwaysSgsMusicControls)
+		  mMusicWidget.setVisibility(View.VISIBLE);
+		  mMusicWidget.setControllerVisibility(true,mMusicWidget.isControllerShowing());	
+		}else if(!am.isMusicActive()){
+		  mMusicWidget.setVisibility(View.GONE);
+		}
+	}
     }
 
     /**
@@ -555,7 +588,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
     private void refreshAlarmDisplay() {
         mNextAlarm = mLockPatternUtils.getNextAlarm();
-        if (mNextAlarm != null && !mShowingInfo) {
+        if (mNextAlarm != null) {
             mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
         }
         updateStatusLines();
@@ -620,14 +653,14 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
             mStatus1.setText(mCharging);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
-        } else if (mNextAlarm != null && mCharging == null && !mShowingInfo) {
+        } else if (mNextAlarm != null && mCharging == null) {
             // next alarm only
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.INVISIBLE);
 
             mStatus1.setText(mNextAlarm);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon, null, null, null);
-        } else if (mCharging != null && mNextAlarm != null && !mShowingInfo) {
+        } else if (mCharging != null && mNextAlarm != null) {
             // both charging and next alarm
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.VISIBLE);
@@ -822,6 +855,9 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     /** {@inheritDoc} */
     public void onPause() {
         mSelector.enableUnlockMode();
+      if(mSgsMusicControls){
+	mMusicWidget.onPause();
+      }
     }
 
     /** {@inheritDoc} */
@@ -831,6 +867,15 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mSelector.enableUnlockMode();
 	mLockscreenWallpaperUpdater.onResume();
 	mLockscreenInfo.onResume();
+      if(mSgsMusicControls){
+	mMusicWidget.onResume();
+	if(am.isMusicActive() || mAlwaysSgsMusicControls){
+	  mMusicWidget.setVisibility(View.VISIBLE);
+	  mMusicWidget.setControllerVisibility(true,mMusicWidget.isControllerShowing());	
+	}else if(!am.isMusicActive()){
+	  mMusicWidget.setVisibility(View.GONE);
+	}
+      }
     }
 
     /** {@inheritDoc} */
@@ -840,6 +885,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mUpdateMonitor = null;
         mCallback = null;
 	mLockscreenInfo.cleanUp();
+	mMusicWidget.cleanUp();
     }
 
     /** {@inheritDoc} */

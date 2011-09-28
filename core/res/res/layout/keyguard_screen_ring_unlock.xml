@@ -21,23 +21,26 @@
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
-  
- <FrameLayout android:id="@+id/root" android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-
-<RelativeLayout 
-    android:layout_width="fill_parent"
+ <FrameLayout android:id="@+id/root" 
+    android:layout_width="fill_parent" 
     android:layout_height="fill_parent"
-    android:background="#70000000"
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
     >
-<RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
-    		<LinearLayout 
-			android:gravity="top" 
-			android:layout_alignParentTop="true" 
-			android:id="@+id/musicwidget_top" 
-			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content" />
-
+  
+<RelativeLayout     
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal" >
+    <RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
+      
+    <LinearLayout 
+	android:gravity="top" 
+	android:layout_alignParentTop="true" 
+	android:id="@+id/musicwidget_top" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" />
+    
     <TextView
         android:id="@+id/customMsg"
         android:layout_width="wrap_content"
@@ -51,6 +54,7 @@
         android:gravity="right|bottom"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
+
     <TextView
         android:id="@+id/carrier"
         android:layout_width="wrap_content"
@@ -63,7 +67,7 @@
         android:ellipsize="marquee"
         android:gravity="right|bottom"
         android:textAppearance="?android:attr/textAppearanceMedium"
-		android:visibility="gone"
+	android:visibility="gone"
         />
 
     <!-- "emergency calls only" shown when sim is missing or PUKd -->
@@ -86,15 +90,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/carrier"
         android:layout_marginTop="52dip"
+        android:layout_marginLeft="20dip"
         android:layout_marginBottom="8dip"
-	android:layout_marginLeft="4dip"
-	android:layout_marginRight="4dip"
         >
 
         <TextView android:id="@+id/timeDisplay"
-	    android:layout_width="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-	    android:layout_toLeftOf="@id/am_pm"
             android:singleLine="true"
             android:ellipsize="none"
             android:textSize="72sp"
@@ -104,11 +106,12 @@
             android:shadowDy="0"
             android:shadowRadius="3.0"
             android:layout_marginBottom="10dip"
-			/>
-			
-	    <TextView android:id="@+id/am_pm"
-	    android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
+            />
+
+
+        <TextView android:id="@+id/am_pm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_toRightOf="@id/timeDisplay"
             android:layout_alignBaseline="@id/timeDisplay"
             android:singleLine="true"
@@ -121,27 +124,25 @@
             android:shadowDy="0"
             android:shadowRadius="3.0"
             />
-			
-	</com.android.internal.widget.DigitalClock>
+
+    </com.android.internal.widget.DigitalClock>
 
     <TextView
         android:id="@+id/date"
-	android:layout_width="fill_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/time"
+        android:layout_marginLeft="24dip"
         android:textAppearance="?android:attr/textAppearanceMedium"
-	android:layout_marginLeft="4dip"
-	android:layout_marginRight="4dip"
         />
-	
+
     <TextView
         android:id="@+id/status1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/date"
         android:layout_marginTop="4dip"
-        android:layout_marginLeft="4dip"
-	android:layout_marginRight="4dip"
+        android:layout_marginLeft="24dip"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:drawablePadding="4dip"
         />
@@ -152,13 +153,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/status1"
         android:layout_marginTop="4dip"
-        android:layout_marginLeft="4dip"
-	android:layout_marginRight="4dip"
+        android:layout_marginLeft="24dip"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:drawablePadding="4dip"
         />
-	
-    <LinearLayout 
+		
+		    <LinearLayout 
 	android:orientation="vertical" 
 	android:id="@+id/lock_box" 
 	android:layout_width="fill_parent" 
@@ -166,7 +166,7 @@
 	android:layout_below="@id/date"
 	/>
 
-	<TextView
+    <TextView
         android:id="@+id/screenLocked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -177,14 +177,13 @@
         android:drawablePadding="4dip"
         />
 
-    <com.android.internal.widget.RotarySelector
-        android:id="@+id/rotary_selector"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dip"
-        />
+        <com.android.internal.widget.RingSelector
+            android:id="@+id/ring_selector"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            />
 
     <!-- emergency call button shown when sim is PUKd and tab_selector is
          hidden -->
@@ -200,6 +199,7 @@
         android:drawablePadding="8dip"
         android:visibility="gone"
         />
+	
 	      <ImageButton
             android:id="@+id/musicControlPlay"
             android:src="@drawable/ic_media_play"
@@ -250,14 +250,12 @@
             android:background="@color/transparent"
             android:visibility="gone"
 	      />
-		  
-		<LinearLayout 
-			android:gravity="bottom" 
-			android:layout_alignParentBottom="true" 
-			android:id="@+id/musicwidget_bottom" 
-			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content" />
-	</RelativeLayout>
+      	<LinearLayout 
+	    android:gravity="bottom" 
+	    android:layout_alignParentBottom="true" 
+	    android:id="@+id/musicwidget_bottom" 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" />
+	    </RelativeLayout>
 </RelativeLayout>
 </FrameLayout>
-

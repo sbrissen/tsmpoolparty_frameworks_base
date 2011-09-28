@@ -301,6 +301,12 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
         mUserPresentIntent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
 
         final ContentResolver cr = mContext.getContentResolver();
+
+        IntentFilter iF = new IntentFilter();
+        iF.addAction("com.android.music.metachanged");
+        iF.addAction("com.android.music.playstatechanged");
+        mContext.registerReceiver(mMusicReceiver, iF);
+
         mShowLockIcon = (Settings.System.getInt(cr, "show_status_bar_lock", 0) == 1);
     }
 

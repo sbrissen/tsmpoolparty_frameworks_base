@@ -9,28 +9,26 @@
 <!-- This is the general lock screen which shows information about the state of the device, as well as 
 	instructions on how to get past it depending on the state of the device. It is the same for landscape 
 	and portrait. -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="#70000000"
-	android:gravity="center_horizontal"
-	android:id="@+id/root">
-	<RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
-	<TextView
-		android:id="@+id/customMsg"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentRight="true"
-		android:layout_marginTop="10dip"
-		android:layout_marginRight="8dip"
-		android:singleLine="true"
-		android:ellipsize="marquee"
-		android:gravity="right|bottom"
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:textSize="22sp" />
-
+ <FrameLayout android:id="@+id/root" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
+    >
+  
+<RelativeLayout     
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal" >
+<RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
+  
+      <LinearLayout 
+	android:gravity="top" 
+	android:layout_alignParentTop="true" 
+	android:id="@+id/musicwidget_top" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" />
+	
 	<TextView
 		android:id="@+id/carrier"
 		android:layout_width="wrap_content"
@@ -44,7 +42,21 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:gravity="right|bottom"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:textSize="22sp" 
-		/>
+		android:visibility="gone" />
+	<TextView
+		android:id="@+id/customMsg"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginTop="10dip"
+		android:layout_marginRight="8dip"
+		android:singleLine="true"
+		android:ellipsize="marquee"
+		android:gravity="right|bottom"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:textSize="22sp" 
+		 />
 
 	<!-- "emergency calls only" shown when sim is missing or PUKd -->
 	<TextView
@@ -128,17 +140,7 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:drawablePadding="4dip" />
 		
-	<TextView
-		android:id="@+id/customMsg"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="4.0dip"
-		android:layout_marginLeft="24dip"
-		android:layout_marginRight="24dip"
-		android:layout_below="@id/status2"
-		android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-				   <LinearLayout 
+		    <LinearLayout 
 	android:orientation="vertical" 
 	android:id="@+id/lock_box" 
 	android:layout_width="fill_parent" 
@@ -146,14 +148,12 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 	android:layout_below="@id/date"
 	/>
 
-	
-
 	<com.android.internal.widget.UnlockRing
 		android:id="@+id/unlock_ring"
 		android:orientation="horizontal"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true" />
+		android:layout_height="fill_parent"
+		android:layout_alignParentBottom="true" />
 
 	<!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
 	<Button
@@ -225,5 +225,12 @@ xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
 		android:drawablePadding="4dip" 
 		android:layout_alignParentBottom="true"
 		android:gravity="bottom" />
-	      </RelativeLayout>
+      	<LinearLayout 
+	    android:gravity="bottom" 
+	    android:layout_alignParentBottom="true" 
+	    android:id="@+id/musicwidget_bottom" 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" />
+	    </RelativeLayout>
 </RelativeLayout>
+</FrameLayout>
