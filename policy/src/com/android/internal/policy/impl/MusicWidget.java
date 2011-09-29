@@ -292,7 +292,8 @@ public class MusicWidget extends RelativeLayout {
                   mPlayButton.setVisibility(View.GONE);
 		  sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 		  resetMinTimer();
-		  handleMediaUpdate();
+		  Message msg = mHandler.obtainMessage(MSG_MEDIA_UPDATE);
+		  mHandler.sendMessage(msg);
 		}            
             }
         });

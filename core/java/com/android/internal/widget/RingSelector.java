@@ -88,6 +88,7 @@ public class RingSelector extends ViewGroup {
      */
     private int mOrientation;
 
+	private int mSelectedRingId;
     private Ring mLeftRing;
     private Ring mRightRing;
     private Ring mMiddleRing;
@@ -525,6 +526,7 @@ public class RingSelector extends ViewGroup {
         private int alignCenterY;
 
         private boolean isHidden = false;
+		private boolean isActive = false;
 
         public SecRing(ViewGroup parent, int ringId) {
             ring = new ImageView(parent.getContext());
@@ -562,11 +564,34 @@ public class RingSelector extends ViewGroup {
             ring.startAnimation(alphaAnim);
             ring.setVisibility(View.VISIBLE);
         }
+		
+        void activate() {
+            if (isActive) return;
+            isActive = true;
+
+            ScaleAnimation scaleAnim = new ScaleAnimation(1.0f, 1.5f, 1.0f, 1.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            scaleAnim.setInterpolator(new DecelerateInterpolator());
+            scaleAnim.setDuration(ANIM_CENTER_FADE_TIME);
+            scaleAnim.setFillAfter(true);
+            ring.startAnimation(scaleAnim);
+        }
+
+        void deactivate() {
+            if (!isActive) return;
+            isActive = false;
+
+            ScaleAnimation scaleAnim = new ScaleAnimation(1.5f, 1.0f, 1.5f, 1.0f,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            scaleAnim.setInterpolator(new DecelerateInterpolator());
+            scaleAnim.setDuration(ANIM_CENTER_FADE_TIME);
+            scaleAnim.setFillAfter(true);
+            ring.startAnimation(scaleAnim);
+        }
 
         void reset(boolean animate) {
             if (animate) {
                 hide();
-                return;
             }
             ring.setVisibility(View.INVISIBLE);
         }
@@ -620,7 +645,7 @@ public class RingSelector extends ViewGroup {
                     alignCenterY -= mSecRingCenterOffset;
                 }
             } else if (orientation == VERTICAL) {
-                int spacing = parentHeight / (2 * totalRings);
+                int spacing = parentHeight / totalRings;
                 alignCenterX = parentWidth - mSecRingBottomOffset - mBottomOffset;
                 alignCenterY = parentHeight - (spacing / 2 + ringNum * spacing); //align on evenly-spaced horizontals
 
@@ -854,9 +879,18 @@ public class RingSelector extends ViewGroup {
             switch (action) {
                 case MotionEvent.ACTION_MOVE:
                     moveRing(x, y);
+                    if (mUseMiddleRing && mCurrentRing == mMiddleRing) {
+                        for (int q = 0; q < 4; q++) {
+                            if (!mSecRings[q].isHidden() && mSecRings[q].contains((int) x, (int) y)) {
+                                mSecRings[q].activate();
+                            } else {
+                                mSecRings[q].deactivate();
+                            }
+                        }
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
-                    int secIdx = -1;
+                    mSelectedRingId = -1;
                     boolean thresholdReached = false;
 
                     if (mCurrentRing != mMiddleRing) {
@@ -868,7 +902,7 @@ public class RingSelector extends ViewGroup {
                         for (int q = 0; q < 4; q++) {
                             if (!mSecRings[q].isHidden() && mSecRings[q].contains((int) x, (int) y)) {
                                 thresholdReached = true;
-                                secIdx = q;
+                                mSelectedRingId = q;
                                 break;
                             }
                         }
@@ -879,11 +913,6 @@ public class RingSelector extends ViewGroup {
                         mTracking = false;
                         mCurrentRing.setState(Ring.STATE_ACTIVE);
 
-                        boolean isLeft = mCurrentRing == mLeftRing;
-                        boolean isRight = mCurrentRing == mRightRing;
-                        dispatchTriggerEvent(isLeft ?
-                            OnRingTriggerListener.LEFT_RING : (isRight ? OnRingTriggerListener.RIGHT_RING :
-                                OnRingTriggerListener.MIDDLE_RING), secIdx);
                         startAnimating();
 
                         setGrabbedState(OnRingTriggerListener.NO_RING);
@@ -942,6 +971,11 @@ public class RingSelector extends ViewGroup {
     }
 
     private void onAnimationDone() {
+        boolean isLeft = mCurrentRing == mLeftRing;
+        boolean isRight = mCurrentRing == mRightRing;
+        dispatchTriggerEvent(isLeft ?
+                OnRingTriggerListener.LEFT_RING : (isRight ? OnRingTriggerListener.RIGHT_RING :
+                    OnRingTriggerListener.MIDDLE_RING), mSelectedRingId);
         resetView();
         mAnimating = false;
     }
