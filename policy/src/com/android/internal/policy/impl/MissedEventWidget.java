@@ -139,7 +139,7 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
       mRingSelector.setVisibility(View.VISIBLE);
       mRingSelector.setLeftVisibility(View.INVISIBLE);
       mRingSelector.setRightVisibility(View.INVISIBLE);
-      mRingSelector.setMiddleVisibility(View.GONE);
+      mRingSelector.setMiddleVisibility(View.INVISIBLE);
     }   
     
     updateMissedEvent();
@@ -205,7 +205,7 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
 	mRingSelector.setLeftVisibility(View.INVISIBLE);
 	mRingSelector.setLeftVisibility(View.INVISIBLE);
       }
-    }
+    }    
   }
 
   public void cleanUp(){
@@ -307,7 +307,11 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
 	  } catch (URISyntaxException e) {
           } catch (ActivityNotFoundException e) {
           }
-        }
+        }else{
+	  mRingSelector.setMiddleVisibility(View.INVISIBLE);
+	  mRingSelector.cancelAnimation();
+      }
+      
     }
 
 

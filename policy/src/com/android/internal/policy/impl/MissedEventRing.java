@@ -83,14 +83,14 @@ public class MissedEventRing extends ViewGroup {
     private final int mSecRingBottomOffset;
     private final int mSecRingCenterOffset;
 
-    private boolean mUseMiddleRing = true;
+    private boolean mUseMiddleRing = false;
 
     /**
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     private int mOrientation;
 
-	private int mSelectedRingId;
+    private int mSelectedRingId;
     private Ring mLeftRing;
     private Ring mRightRing;
     private Ring mMiddleRing;
@@ -350,7 +350,9 @@ public class MissedEventRing extends ViewGroup {
                     ring.startAnimation(trans);
 		    icon.startAnimation(trans);
 		    iconText.startAnimation(trans);
+
                 }
+
             }
         }
 
@@ -393,7 +395,7 @@ public class MissedEventRing extends ViewGroup {
             setState(STATE_NORMAL);
             target.setVisibility(View.INVISIBLE);
 	    icon.setVisibility(View.VISIBLE);
-	     iconText.setVisibility(View.VISIBLE);
+	    iconText.setVisibility(View.VISIBLE);
 
             int centerX = (ring.getLeft() + ring.getRight()) / 2;
             int centerY = (ring.getTop() + ring.getBottom()) / 2;
@@ -413,6 +415,7 @@ public class MissedEventRing extends ViewGroup {
             ring.startAnimation(scaleAnim);
 
             ring.setVisibility(View.VISIBLE);
+	    
             if (alignment == ALIGN_CENTER || alignment == ALIGN_MIDDLE) {
                 if (ring.getVisibility() == View.INVISIBLE && animate) {
                     AlphaAnimation alphaAnim = new AlphaAnimation(0.0f, 1.0f);
@@ -426,6 +429,8 @@ public class MissedEventRing extends ViewGroup {
                         trans.setInterpolator(new OvershootInterpolator());
                         trans.setFillAfter(false);
                         ring.startAnimation(trans);
+			icon.startAnimation(trans);
+			icon.startAnimation(trans);
                     } else {
                         ring.clearAnimation();
                         target.clearAnimation();
@@ -441,6 +446,8 @@ public class MissedEventRing extends ViewGroup {
                     trans.setInterpolator(new OvershootInterpolator());
                     trans.setFillAfter(false);
                     ring.startAnimation(trans);
+		    icon.startAnimation(trans);
+		    iconText.startAnimation(trans);
                 } else {
                     ring.clearAnimation();
                     target.clearAnimation();
@@ -922,13 +929,13 @@ public class MissedEventRing extends ViewGroup {
 		  }
                     mOtherRing2 = mMiddleRing;
                     setGrabbedState(OnRingTriggerListener.RIGHT_RING);
-                } else {
+                } else if(middleHit){
                     mCurrentRing = mMiddleRing;
                     mOtherRing1 = mLeftRing;
                     mOtherRing2 = mRightRing;
 
                     for (SecRing secRing : mSecRings) {
-                        secRing.show();
+                        //secRing.show();
                     }
 
                     setGrabbedState(OnRingTriggerListener.MIDDLE_RING);
@@ -963,7 +970,7 @@ public class MissedEventRing extends ViewGroup {
       }else if(mShowRightRing){
         mRightRing.reset(animate);
       }
-        mMiddleRing.reset(animate);
+       // mMiddleRing.reset(animate);
         if (!animate) {
             mAnimating = false;
         }
@@ -1023,12 +1030,12 @@ public class MissedEventRing extends ViewGroup {
                         mCurrentRing.setState(Ring.STATE_ACTIVE);
 			if(mAnimationWillBeCanceled){
 			      mAnimationWillBeCanceled = true;
-			  
+			    // resetView();
 			    }else{
 			      mAnimationWillBeCanceled = false;
 			     
 			    }
-			resetView();
+
                         startAnimating();
 
                         setGrabbedState(OnRingTriggerListener.NO_RING);
@@ -1040,16 +1047,15 @@ public class MissedEventRing extends ViewGroup {
                     mTracking = false;
                     mTriggered = false;
 		    if(mOtherRing1 != null){
-		      mOtherRing1.show(true);
+		      mOtherRing1.show(false);
 			}  
-                    mOtherRing1.show(true);
-                    mOtherRing2.show(true);
+                    //mOtherRing1.show(true);
+                    mOtherRing2.show(false);
                     mCurrentRing.reset(true);
                     mCurrentRing.hideTarget();
-                    mCurrentRing = null;
+		    mCurrentRing = null;
                     mOtherRing1 = null;
                     mOtherRing2 = null;
-
                     for (SecRing secRing : mSecRings) {
                         secRing.hide();
                     }
@@ -1107,10 +1113,9 @@ public class MissedEventRing extends ViewGroup {
     private void resetView() {
         mLeftRing.reset(false);
         mRightRing.reset(false);
-        mMiddleRing.reset(false);
-
+        
         for (SecRing secRing : mSecRings) {
-            secRing.reset(false);
+            //secRing.reset(false);
         }
     }
 

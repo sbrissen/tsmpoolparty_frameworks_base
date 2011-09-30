@@ -732,7 +732,7 @@ public class SlidingTab extends ViewGroup {
 			      mAnimationWillBeCanceled = true;
 			    }else{
 			      mAnimationWillBeCanceled = false;
-			      //resetView();
+			     // resetView();
 			    }
 
                             //startAnimating(isLeft ? mHoldLeftOnTransition : mHoldRightOnTransition);
