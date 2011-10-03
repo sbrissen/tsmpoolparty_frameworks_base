@@ -588,7 +588,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
     private void refreshAlarmDisplay() {
         mNextAlarm = mLockPatternUtils.getNextAlarm();
-        if (mNextAlarm != null) {
+        if (mNextAlarm != null && !mShowingInfo) {
             mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
         }
         updateStatusLines();
@@ -653,14 +653,14 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 
             mStatus1.setText(mCharging);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
-        } else if (mNextAlarm != null && mCharging == null) {
+        } else if (mNextAlarm != null && mCharging == null && !mShowingInfo) {
             // next alarm only
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.INVISIBLE);
 
             mStatus1.setText(mNextAlarm);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon, null, null, null);
-        } else if (mCharging != null && mNextAlarm != null) {
+        } else if (mCharging != null && mNextAlarm != null && !mShowingInfo) {
             // both charging and next alarm
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.VISIBLE);

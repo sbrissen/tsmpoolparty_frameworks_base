@@ -90,6 +90,7 @@ private:
     int32_t mAudioTimeScale;
     int64_t mMaxFileSizeBytes;
     int64_t mMaxFileDurationUs;
+	int32_t mDurationIntervalMs;
     int64_t mTrackEveryTimeDurationUs;
     int32_t mRotationDegrees;  // Clockwise
 
@@ -126,6 +127,7 @@ private:
     status_t setParamInterleaveDuration(int32_t durationUs);
     status_t setParam64BitFileOffset(bool use64BitFileOffset);
     status_t setParamMaxFileDurationUs(int64_t timeUs);
+	status_t setParamDurationIntervalMs(int32_t durationUs);
     status_t setParamMaxFileSizeBytes(int64_t bytes);
     status_t setParamMovieTimeScale(int32_t timeScale);
     void clipVideoBitRate();
