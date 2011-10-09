@@ -1,28 +1,23 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2006 The Android Open Source Project
+* Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.systemui.statusbar;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.*;
-import java.lang.Object;
-import java.lang.String;
+import com.android.internal.R;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -30,9 +25,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.Handler;
 import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
@@ -42,26 +37,34 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import com.android.internal.R;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
- * This widget display an analogic clock with two hands for hours and
- * minutes.
- */
+* This widget display an analogic clock with two hands for hours and minutes.
+*/
 public class Clock extends TextView {
+
     private boolean mAttached;
+
     private Calendar mCalendar;
+
     private String mClockFormatString;
+
     private SimpleDateFormat mClockFormat;
 
-    private static final int AM_PM_STYLE_NORMAL  = 0;
-    private static final int AM_PM_STYLE_SMALL   = 1;
-    private static final int AM_PM_STYLE_GONE    = 2;
+    private static final int AM_PM_STYLE_NORMAL = 0;
+
+    private static final int AM_PM_STYLE_SMALL = 1;
+
+    private static final int AM_PM_STYLE_GONE = 2;
 
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
-    private int mClockStyle;
-    private int mClockColor;
+    private int mAmPmStyle;
+
+    private boolean mShowClock;
 
     Handler mHandler;
 
@@ -80,7 +83,8 @@ public class Clock extends TextView {
                     Settings.System.STATUSBAR_CLOCK_POSITION), false, this);
         }
 
-        @Override public void onChange(boolean selfChange) {
+        @Override
+        public void onChange(boolean selfChange) {
             updateSettings();
         }
     }
@@ -119,14 +123,17 @@ public class Clock extends TextView {
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
 
-        // NOTE: It's safe to do these after registering the receiver since the receiver always runs
-        // in the main thread, therefore the receiver can't run before this method returns.
+        // NOTE: It's safe to do these after registering the receiver since the
+        // receiver always runs
+        // in the main thread, therefore the receiver can't run before this
+        // method returns.
 
-        // The time zone may have changed while the receiver wasn't registered, so update the Time
+        // The time zone may have changed while the receiver wasn't registered,
+        // so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         // Make sure we update to the current time
-        updateClock();
+        updateSettings();
     }
 
     @Override
@@ -154,13 +161,15 @@ public class Clock extends TextView {
     };
 
     final void updateClock() {
+        AM_PM_STYLE = (Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.STATUSBAR_CLOCK_STYLE, 2));
         mCalendar.setTimeInMillis(System.currentTimeMillis());
-	setText(getSmallTime());
-	updateSettings();	
+        setText(getSmallTime());
     }
 
     private final CharSequence getSmallTime() {
         Context context = getContext();
+
         boolean b24 = DateFormat.is24HourFormat(context);
         int res;
 
@@ -177,10 +186,11 @@ public class Clock extends TextView {
         String format = context.getString(res);
         if (!format.equals(mClockFormatString)) {
             /*
-             * Search for an unquoted "a" in the format string, so we can
-             * add dummy characters around it to let us find it again after
-             * formatting and change its size.
-             */
+* Search for an unquoted "a" in the format string, so we can add
+* dummy characters around it to let us find it again after
+* formatting and change its size.
+*/
+
             if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
                 int a = -1;
                 boolean quoted = false;
@@ -197,13 +207,14 @@ public class Clock extends TextView {
                 }
 
                 if (a >= 0) {
-                    // Move a back so any whitespace before AM/PM is also in the alternate size.
+                    // Move a back so any whitespace before AM/PM is also in the
+                    // alternate size.
                     final int b = a;
-                    while (a > 0 && Character.isWhitespace(format.charAt(a-1))) {
+                    while (a > 0 && Character.isWhitespace(format.charAt(a - 1))) {
                         a--;
                     }
-                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
-                        + "a" + MAGIC2 + format.substring(b + 1);
+                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b) + "a"
+                            + MAGIC2 + format.substring(b + 1);
                 }
             }
 
@@ -220,12 +231,12 @@ public class Clock extends TextView {
             if (magic1 >= 0 && magic2 > magic1) {
                 SpannableStringBuilder formatted = new SpannableStringBuilder(result);
                 if (AM_PM_STYLE == AM_PM_STYLE_GONE) {
-                    formatted.delete(magic1, magic2+1);
+                    formatted.delete(magic1, magic2 + 1);
                 } else {
                     if (AM_PM_STYLE == AM_PM_STYLE_SMALL) {
                         CharacterStyle style = new RelativeSizeSpan(0.7f);
-                        formatted.setSpan(style, magic1, magic2,
-                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                        formatted
+                                .setSpan(style, magic1, magic2, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
                     }
                     formatted.delete(magic2, magic2 + 1);
                     formatted.delete(magic1, magic1 + 1);
@@ -238,26 +249,25 @@ public class Clock extends TextView {
 
     }
 
-    private void updateSettings(){
+    protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-	mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR, -1);
+	int mClockColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_COLOR, -1);
 
 	setTextColor(mClockColor);
 
-        mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 2);
-
-	if(mClockStyle == 3) {
-	    setVisibility(View.GONE);
-	}else if (mClockStyle != AM_PM_STYLE) {
-	      AM_PM_STYLE = mClockStyle;
-	      setVisibility(View.VISIBLE);
-	      mClockFormatString = "";
-
-            if (mAttached) {
-                updateClock();
-            }
+        mClockFormatString = "";
+        if (mAttached) {
+            updateClock();
         }
+
+         int mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_STYLE, 2);
+	 int mClockPosition = (Settings.System.getInt(resolver, Settings.System.STATUSBAR_CLOCK_POSITION, 0));
+
+	if(mClockStyle == 3 || mClockPosition == 1 || mClockPosition == 2)
+	    setVisibility(View.GONE);
+        else
+            setVisibility(View.VISIBLE);
+
     }
 }
-

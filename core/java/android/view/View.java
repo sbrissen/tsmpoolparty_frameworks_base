@@ -620,6 +620,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      * The logging tag used by this class with android.util.Log.
      */
     protected static final String VIEW_LOG_TAG = "View";
+    private int mSoundEffect;
 
     /**
      * Used to mark a View that has no ID.
@@ -3218,6 +3219,10 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      */
     public void setSoundEffectsEnabled(boolean soundEffectsEnabled) {
         setFlags(soundEffectsEnabled ? SOUND_EFFECTS_ENABLED: 0, SOUND_EFFECTS_ENABLED);
+    }
+
+    public void setSoundEffect(int soundEffect){
+	mSoundEffect = soundEffect;
     }
 
     /**

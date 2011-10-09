@@ -368,6 +368,24 @@ status_t StagefrightRecorder::setParamMaxFileDurationUs(int64_t timeUs) {
     return OK;
 }
 
+status_t StagefrightRecorder::setParamDurationIntervalMs(int32_t durationUs) {
+    LOGV("setParamDurationIntervalMs: %d us", durationUs);
+    if (durationUs <= 0) {
+        LOGW("Duration Interval is not positive: %d us. Disabling duration limit.", durationUs);
+        return BAD_VALUE; // Disable the duration limit for zero or negative values.
+    } else if (durationUs <= 100) {  // XXX: 100 milli-seconds
+        LOGE("Duration Interval is too short: %d us", durationUs);
+        return BAD_VALUE;
+    }
+
+    if (durationUs <= 100) {
+        LOGW("Target duration-interval %d us too short to be respected", durationUs);
+    }
+	LOGW("Target duration-interval %d us to be used:", durationUs);
+    mDurationIntervalMs = durationUs;
+    return OK;
+}
+
 status_t StagefrightRecorder::setParamMaxFileSizeBytes(int64_t bytes) {
     LOGV("setParamMaxFileSizeBytes: %lld bytes", bytes);
     if (bytes <= 1024) {  // XXX: 1 kB
@@ -501,7 +519,12 @@ status_t StagefrightRecorder::setParameter(
         if (safe_strtoi64(value.string(), &max_duration_ms)) {
             return setParamMaxFileDurationUs(1000LL * max_duration_ms);
         }
-    } else if (key == "max-filesize") {
+    }else if (key == "duration-interval") {
+        int32_t duration_interval_ms;
+        if (safe_strtoi32(value.string(), &duration_interval_ms)) {
+            return setParamDurationIntervalMs(duration_interval_ms);
+        }
+	}else if (key == "max-filesize") {
         int64_t max_filesize_bytes;
         if (safe_strtoi64(value.string(), &max_filesize_bytes)) {
             return setParamMaxFileSizeBytes(max_filesize_bytes);
@@ -1115,6 +1138,9 @@ status_t StagefrightRecorder::startMPEG4Recording() {
     if (mMaxFileDurationUs != 0) {
         writer->setMaxFileDuration(mMaxFileDurationUs);
     }
+    if (mDurationIntervalMs != 0) {
+        writer->setDurationInterval(mDurationIntervalMs);
+    }
     if (mMaxFileSizeBytes != 0) {
         writer->setMaxFileSize(mMaxFileSizeBytes);
     }
@@ -1212,6 +1238,7 @@ status_t StagefrightRecorder::reset() {
     mVideoEncoderProfile = -1;
     mVideoEncoderLevel   = -1;
     mMaxFileDurationUs = 0;
+	mDurationIntervalMs = 0;
     mMaxFileSizeBytes = 0;
     mTrackEveryTimeDurationUs = 0;
     mRotationDegrees = 0;
@@ -1260,6 +1287,8 @@ status_t StagefrightRecorder::dump(
     snprintf(buffer, SIZE, "     Max file size (bytes): %lld\n", mMaxFileSizeBytes);
     result.append(buffer);
     snprintf(buffer, SIZE, "     Max file duration (us): %lld\n", mMaxFileDurationUs);
+    result.append(buffer);
+	snprintf(buffer, SIZE, "     Duration Interval duration (us): %d\n", mDurationIntervalMs);
     result.append(buffer);
     snprintf(buffer, SIZE, "     File offset length (bits): %d\n", mUse64BitFileOffset? 64: 32);
     result.append(buffer);
