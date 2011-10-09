@@ -940,7 +940,7 @@ public class RotarySelector extends View {
         invalidate();
     }
 
-    private void reset() {
+    public void reset() {
         mAnimating = false;
         mRotaryOffsetX = 0;
         mDimplesOfFling = 0;

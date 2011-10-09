@@ -1,3 +1,14 @@
+/*****************************************************************************************************
+/
+/
+/  Lockscreen Wallpaper Updater:
+/    -Displays a user selected wallpaper (via TSMParts) on Lockscreen
+/
+/  This was modeled from the SGS2 Wallpaper Updater
+/
+/  Converted/Written By: Scott Brissenden
+*******************************************************************************************************/
+
 package com.android.internal.policy.impl;
 
 import android.content.BroadcastReceiver;
@@ -18,6 +29,7 @@ import android.content.IntentFilter;
 import android.view.LayoutInflater;
 import java.io.File;
 import android.view.ViewGroup;
+import android.view.View;
 import android.provider.Settings;
 import android.content.ContentResolver;
 import android.content.res.Resources;
@@ -25,12 +37,11 @@ import android.net.Uri;
 import java.io.InputStream;
 import java.io.FileInputStream;
 
-
 import com.android.internal.R;
 
 class LockscreenWallpaperUpdater extends RelativeLayout {
     
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int IS_CHANGED_DRAWABLE = 1;
     private static final int IS_NOT_CHANGED_DRAWABLE = 0;
     private static final int MODE_HOMESCREEN_WALLPAPER = 0;
@@ -62,7 +73,6 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 	
 	mHandler = new Handler(){
 	    public void handleMessage(Message msg){
-
 	      
 	      switch(msg.what) {
 		  case MSG_LOCKSCREENWALLPAPER_CHANGED:
@@ -72,8 +82,7 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 		  break;
 	      }
 	    }
-	};
-	
+	};	
 
 	IntentFilter filter = new IntentFilter();
 	filter.addAction(LOCKSCREEN_WALLPAPER_INFO);
@@ -92,22 +101,16 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 		    mHandler.sendMessage(mHandler.obtainMessage(0x140));
 		} else {}
 	    }
-	};
-	 
+	}; 
 
 	context.registerReceiver(mBroadcastReceiver,filter);
-
-	Log.d("LockscreenWallpaperUpdater","add lockscreenwallpaper");
     }
 
     private Drawable getLockscreenDrawable(){
-	Log.d("LockscreenWallpaperUpdater","get drawable (keyguardupdatemonitor private get) ");
 
 	if(mBootCompleted){
 	  return mLockscreenWallpaperDrawable;
-
 	}else {
-	  Log.d("LockscreenWallpaperUpdater","drawable is null(keyguardupdatemonitor private get) ");
 	  setLockscreenDrawable();
 	  return mLockscreenWallpaperDrawable;
 	}
@@ -121,16 +124,12 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
 		
 	File file = new File(WALLPAPERIMAGE_PATH);
 
-
 	if(file.exists()){
-	  Log.d("LockscreenWallpaperUpdater", "wallpaper file exist ");
 	  wallpaperDrawable = new BitmapDrawable(mContext.getResources(),WALLPAPERIMAGE_PATH);
 	  return wallpaperDrawable;	
 	} else {
-	  Log.d("LockscreenWallpaperUpdater", "wallpaper file not exist ");
 	  return mContext.getResources().getDrawable(R.drawable.default_lockscreen_wallpaper);
-	}
-      
+	}      
     }
 
     private void handleBootCompleted(){
@@ -139,7 +138,6 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
     }
 
     private void handleLockScreenWallpaperUpdate(int mode){
-	Log.d("LockscreenWallpaperUpdater", "handleLockScreenWallpaperUpdate");
 	setLockscreenDrawable();
     }
 
@@ -150,30 +148,45 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
     public void cleanUp(){
 	removeAllViews();
 	getContext().unregisterReceiver(mBroadcastReceiver);
-	Log.d("LockscreenWallpaperUpdater","cleanUp()");
     }
 
     public Drawable getLockscreenWallpaper(){
-	Log.d("LockscreenWallpaperUpdater","get drawable (public) ");
 	return getLockscreenDrawable();
     }
 
     public void onPause(){
-	Log.d("LockscreenWallpaperUpdater","onPause()");
+	cleanUp();
     }
 
     public void onResume(){
-	Log.d("LockscreenWallpaperUpdater","onResume()");
 	init();
     }
 
     public void onStop(){
-	Log.d("LockscreenWallpaperUpdater","onStop()");
+	cleanUp();
     }
 
     protected void setLockscreenDrawable(){
-	Log.d("LockscreenWallpaperUpdater","set drawable");
 	mLockscreenWallpaperDrawable = getWallpaperDrawable();
+    }
+
+    protected void onDestroy() {
+
+      unbindDrawables(findViewById(R.id.lockscreenwallpaper_root));
+      System.gc();
+    }
+
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+        view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+            unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+        ((ViewGroup) view).removeAllViews();
+        }
     }
 }
 	  

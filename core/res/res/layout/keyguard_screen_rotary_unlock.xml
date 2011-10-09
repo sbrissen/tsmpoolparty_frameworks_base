@@ -21,21 +21,27 @@
   state of the device, as well as instructions on how to get past it
   depending on the state of the device.  It is the same for landscape
   and portrait.-->
+  
+ <FrameLayout android:id="@+id/root" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tabunlock="http://schemas.android.com/apk/res/com.android.tabunlock"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="#70000000"
-    android:gravity="center_horizontal"
-    android:id="@+id/root">
+    >
 <RelativeLayout android:id="@+id/wallpaper_panel" android:layout_width="fill_parent" android:layout_height="fill_parent">
+  		<LinearLayout 
+			android:gravity="top" 
+			android:layout_alignParentTop="true" 
+			android:id="@+id/musicwidget_top" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/customMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dip"
         android:layout_marginRight="8dip"
@@ -243,6 +249,14 @@
             android:background="@color/transparent"
             android:visibility="gone"
 	      />
+		  
+	<LinearLayout 
+	    android:gravity="bottom" 
+	    android:layout_alignParentBottom="true" 
+	    android:id="@+id/musicwidget_bottom" 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" />
 	</RelativeLayout>
 </RelativeLayout>
+</FrameLayout>
 

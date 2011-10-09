@@ -48,6 +48,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 import com.android.internal.policy.impl.LockscreenInfo;
+import com.android.internal.policy.impl.MusicWidget;
 
 import java.util.Date;
 import java.io.File;
@@ -85,6 +86,9 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
     private RelativeLayout mMainLayout;
     private LinearLayout mBoxLayout;
     private LockscreenInfo mLockscreenInfo;
+    private LinearLayout mMusicLayoutBottom;
+    private LinearLayout mMusicLayoutTop;
+    private MusicWidget mMusicWidget; 
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -132,6 +136,15 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 
     private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
+
+    private int mSgsMusicLoc = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SGSMUSIC_CONTROLS_LOC, 1));
+
+    private boolean mSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_SGSMUSIC_CONTROLS, 1) == 1);
+
+    private boolean mAlwaysSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS, 0) == 1);
 
     /**
      * The status of this lock screen.
@@ -285,13 +298,24 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
 	mMainLayout.addView(mLockscreenWallpaperUpdater,0x0);
 
-	mLockscreenInfo = new LockscreenInfo(context,updateMonitor,configuration);
+	mLockscreenInfo = new LockscreenInfo(context,updateMonitor,configuration,lockPatternUtils);
 	mBoxLayout = (LinearLayout) findViewById(R.id.lock_box);
 	
 	if(mShowingInfo){
 	  mBoxLayout.addView(mLockscreenInfo);
 	}
-	
+
+	mMusicWidget = new MusicWidget(context,callback,updateMonitor);
+	mMusicLayoutBottom = (LinearLayout) findViewById(R.id.musicwidget_bottom);
+	mMusicLayoutTop = (LinearLayout) findViewById(R.id.musicwidget_top);
+
+	if(mSgsMusicLoc == 1 && mSgsMusicControls){
+	  mMusicWidget.setTopLayout();
+	  mMusicLayoutTop.addView(mMusicWidget);
+	}else if(mSgsMusicLoc == 2 && mSgsMusicControls){
+	  mMusicWidget.setBottomLayout();
+	  mMusicLayoutBottom.addView(mMusicWidget);
+	}	
 
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
@@ -466,7 +490,15 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         // cancels the grab.
         if (grabbedState != SlidingTab.OnTriggerListener.NO_HANDLE) {
             mCallback.pokeWakelock();
-        }
+        }else{
+	    if(mSgsMusicControls){
+		if(am.isMusicActive() || mAlwaysSgsMusicControls)
+		  mMusicWidget.setVisibility(View.VISIBLE);
+		  mMusicWidget.setControllerVisibility(true,mMusicWidget.isControllerShowing());	
+		}else if(!am.isMusicActive()){
+		  mMusicWidget.setVisibility(View.GONE);
+		}
+	}
     }
 
     /**
@@ -515,7 +547,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 
     private void refreshAlarmDisplay() {
         mNextAlarm = mLockPatternUtils.getNextAlarm();
-        if (mNextAlarm != null) {
+        if (mNextAlarm != null && !mShowingInfo) {
             mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
         }
         updateStatusLines();
@@ -617,14 +649,14 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 
             mStatus1.setText(mCharging);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
-        } else if (mNextAlarm != null && mCharging == null) {
+        } else if (mNextAlarm != null && mCharging == null && !mShowingInfo) {
             // next alarm only
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.INVISIBLE);
 
             mStatus1.setText(mNextAlarm);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon, null, null, null);
-        } else if (mCharging != null && mNextAlarm != null) {
+        } else if (mCharging != null && mNextAlarm != null && !mShowingInfo) {
             // both charging and next alarm
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.VISIBLE);
@@ -826,15 +858,26 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
 
     /** {@inheritDoc} */
     public void onPause() {
-
+      if(mSgsMusicControls){
+	mMusicWidget.onPause();
+      }
     }
 
     /** {@inheritDoc} */
     public void onResume() {
         resetStatusInfo(mUpdateMonitor);
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
-		mLockscreenWallpaperUpdater.onResume();
+	mLockscreenWallpaperUpdater.onResume();
 	mLockscreenInfo.onResume();
+      if(mSgsMusicControls){
+	mMusicWidget.onResume();
+	if(am.isMusicActive() || mAlwaysSgsMusicControls){
+	  mMusicWidget.setVisibility(View.VISIBLE);
+	  mMusicWidget.setControllerVisibility(true,mMusicWidget.isControllerShowing());	
+	}else if(!am.isMusicActive()){
+	  mMusicWidget.setVisibility(View.GONE);
+	}
+      }
     }
 
     /** {@inheritDoc} */
@@ -844,6 +887,7 @@ class TabLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpda
         mUpdateMonitor = null;
         mCallback = null;
 	mLockscreenInfo.cleanUp();
+	mMusicWidget.cleanUp();
     }
 
     /** {@inheritDoc} */

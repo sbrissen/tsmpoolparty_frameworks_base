@@ -29,7 +29,8 @@ struct MetaData;
 struct MediaWriter : public RefBase {
     MediaWriter()
         : mMaxFileSizeLimitBytes(0),
-          mMaxFileDurationLimitUs(0) {
+          mMaxFileDurationLimitUs(0),
+		  mDurationIntervalMs(0) {
     }
 
     virtual status_t addSource(const sp<MediaSource> &source) = 0;
@@ -40,6 +41,7 @@ struct MediaWriter : public RefBase {
 
     virtual void setMaxFileSize(int64_t bytes) { mMaxFileSizeLimitBytes = bytes; }
     virtual void setMaxFileDuration(int64_t durationUs) { mMaxFileDurationLimitUs = durationUs; }
+	virtual void setDurationInterval(int32_t durationIntUs) { mDurationIntervalMs = durationIntUs; }
     virtual void setListener(const sp<IMediaRecorderClient>& listener) {
         mListener = listener;
     }
@@ -52,6 +54,7 @@ protected:
     virtual ~MediaWriter() {}
     int64_t mMaxFileSizeLimitBytes;
     int64_t mMaxFileDurationLimitUs;
+	int32_t mDurationIntervalMs;
     sp<IMediaRecorderClient> mListener;
 
     void notify(int msg, int ext1, int ext2) {

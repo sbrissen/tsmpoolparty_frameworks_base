@@ -1150,10 +1150,14 @@ public final class Settings {
 	public static final String LOCKSCREEN_DISABLE = "lockscreen_disable";
 	public static final String LOCKSCREEN_ALWAYS_MUSIC_CONTROLS = "lockscreen_always_music_controls";
 	public static final String LOCKSCREEN_MUSIC_CONTROLS = "lockscreen_music_controls";
+	public static final String LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS = "lockscreen_always_sgsmusic_controls";
+	public static final String LOCKSCREEN_SGSMUSIC_CONTROLS = "lockscreen_sgsmusic_controls";	
+	public static final String LOCKSCREEN_SGSMUSIC_CONTROLS_LOC = "lockscreen_sgsmusic_controls_loc";
 	public static final String LOCKSCREEN_TYPE_KEY = "lockscreen_type_key";
 	public static final String LOCKSCREEN_CUSTOM_MSG = "lockscreen_custom_msg";
 	public static final String LOCKSCREEN_TIMEOUT_PREF = "lockscreen_timeout_pref";
 	public static final String LOCKSCREEN_BATTERY_INFO = "lockscreen_battery_info";
+	public static final String LOCKSCREEN_TORCH = "lockscreen_torch";
 	public static final String DBM_COLOR = "dbm_color";
 	public static final String STATUSBAR_CLOCK_POSITION = "statusbar_clock_position";
 	public static final String EXP_BRIGHTNESS_MODE = "pref_brightness_mode";
@@ -1195,6 +1199,16 @@ public final class Settings {
 	public static final String KEY_AUTO_REFRESH_INTERVAL = "aw_daemon_service_key_autorefresh_interval";
 	public static final String KEY_DAEMON_ON_OFF = "aw_daemon_service_key_service_status";
 	public static final String NUM_RECENT_APPS = "num_recent_apps";
+	public static final String LOCKSCREEN_CUSTOM_APP_TOGGLE = "lockscreen_custom_app_toggle";
+	
+
+
+        public static final String[] LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES = new String[] {
+	    "lockscreen_custom_app_activity_1",
+	    "lockscreen_custom_app_activity_2",
+            "lockscreen_custom_app_activity_3",
+            "lockscreen_custom_app_activity_4"
+        };
 	
         /**
          * Whether to allow killing of the foreground process by long-pressing

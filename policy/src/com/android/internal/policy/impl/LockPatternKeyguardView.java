@@ -582,9 +582,13 @@ public class LockPatternKeyguardView extends KeyguardViewBase {
         else if (lockScreen == 4)
             return new HoneycombLockscreen(mContext, mConfiguration, mLockPatternUtils,
                     mUpdateMonitor, mKeyguardScreenCallback);
+	else if(lockScreen == 7)
+	    return new RingLockScreen(mContext, mConfiguration, mLockPatternUtils, mUpdateMonitor,
+                    mKeyguardScreenCallback);
         else
             return new LockScreen(mContext, mConfiguration, mLockPatternUtils, mUpdateMonitor,
                     mKeyguardScreenCallback);
+
     }
 
     View createUnlockScreenFor(UnlockMode unlockMode) {
