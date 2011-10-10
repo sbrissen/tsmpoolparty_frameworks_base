@@ -90,16 +90,16 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
     private TextView mScreenLocked;
     private TextView mEmergencyCallText;
     private Button mEmergencyCallButton;
-    private LockscreenWallpaperUpdater mLockscreenWallpaperUpdater;
-    private RelativeLayout mMainLayout;
-    private LinearLayout mBoxLayout;
-    private LockscreenInfo mLockscreenInfo;
+//    private LockscreenWallpaperUpdater mLockscreenWallpaperUpdater;
+//    private RelativeLayout mMainLayout;
+//    private LinearLayout mBoxLayout;
+//    private LockscreenInfo mLockscreenInfo;
     private Bitmap[] mCustomRingAppIcons = new Bitmap[4];
-    private LinearLayout mMusicLayoutBottom;
-    private LinearLayout mMusicLayoutTop;
-    private MusicWidget mMusicWidget;  
-    private MissedEventWidget mMissedEvent;
-    private LinearLayout mMissedLayout;
+//    private LinearLayout mMusicLayoutBottom;
+//    private LinearLayout mMusicLayoutTop;
+//    private MusicWidget mMusicWidget;  
+//    private MissedEventWidget mMissedEvent;
+//    private LinearLayout mMissedLayout;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -135,8 +135,8 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
     private boolean mUseRingLockscreen = true;
 
-    private boolean mLockAlwaysBattery = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_BATTERY_INFO, 0) == 1);
+ /*   private boolean mLockAlwaysBattery = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_BATTERY_INFO, 0) == 1); */
 
     private boolean mLockMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1) == 1);
@@ -144,17 +144,17 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
 
-    private boolean mShowingInfo = (Settings.System.getInt(mContext.getContentResolver(),
+/*    private boolean mShowingInfo = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_SHOW_INFO, 0) == 1);
 
     private int mClockAlign = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0));
+            Settings.System.LOCKSCREEN_CLOCK_ALIGN, 0)); */
 
     private String mCustomAppActivity = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
 
     private boolean mCustomAppToggle = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_TOGGLE, 0) == 1);
+            Settings.System.LOCKSCREEN_CUSTOM_APP_TOGGLE, 0) == 1); 
 
     private String[] mCustomRingAppActivities = new String[] {
             Settings.System.getString(mContext.getContentResolver(),
@@ -166,7 +166,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
             Settings.System.getString(mContext.getContentResolver(),
                     Settings.System.LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES[3])
     };
-
+/*
     private int mSgsMusicLoc = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_SGSMUSIC_CONTROLS_LOC, 1));
 
@@ -178,7 +178,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
     private boolean mShowMissedEvent = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_MISSED_EVENT, 0) == 1);
-
+*/
     /**
      * The status of this lock screen.
      */
@@ -282,20 +282,20 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         } else {
             inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this, true);
         }
-
+/*
 	mMissedLayout = (LinearLayout) findViewById(R.id.missedevent);
 	mMissedEvent = new MissedEventWidget(context,callback);
 
 	if(mShowMissedEvent){	    
 	    mMissedLayout.addView(mMissedEvent);
 	}
-
+*/
         mCarrier = (TextView) findViewById(R.id.carrier);
         // Required for Marquee to work
         mCarrier.setSelected(true);
         mCarrier.setTextColor(0xffffffff);
 
-	mMainLayout = (RelativeLayout) findViewById(R.id.wallpaper_panel);
+//	mMainLayout = (RelativeLayout) findViewById(R.id.wallpaper_panel);
 
 	mCustomMsg = (TextView) findViewById(R.id.customMsg);
 	String r = (Settings.System.getString(resolver, Settings.System.LOCKSCREEN_CUSTOM_MSG));
@@ -307,7 +307,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         mStatus1 = (TextView) findViewById(R.id.status1);
         mStatus2 = (TextView) findViewById(R.id.status2);
 
-	if(mClockAlign == 0){
+/*	if(mClockAlign == 0){
 	  mClock.setGravity(Gravity.LEFT);  
 	  mDate.setGravity(Gravity.LEFT);
 	  mStatus1.setGravity(Gravity.LEFT);
@@ -323,7 +323,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 	  mStatus1.setGravity(Gravity.RIGHT);
 	  mStatus2.setGravity(Gravity.RIGHT);
 	}
-
+*/
         mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
         mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause);
         mRewindIcon = (ImageButton) findViewById(R.id.musicControlPrevious);
@@ -332,7 +332,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         mScreenLocked = (TextView) findViewById(R.id.screenLocked);
 	mRingSelector = (RingSelector) findViewById(R.id.ring_selector);
 
-	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(mContext);
+/*	mLockscreenWallpaperUpdater = new LockscreenWallpaperUpdater(mContext);
 	mLockscreenWallpaperUpdater.setVisibility(View.VISIBLE);
 	mMainLayout.addView(mLockscreenWallpaperUpdater,0x0);
 
@@ -354,7 +354,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 	  mMusicWidget.setBottomLayout();
 	  mMusicLayoutBottom.addView(mMusicWidget);
 	}
-
+*/
         mEmergencyCallText = (TextView) findViewById(R.id.emergencyCallText);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
         mEmergencyCallButton.setText(R.string.lockscreen_emergency_call);
@@ -551,7 +551,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         // cancels the grab.
         if (grabbedState != SlidingTab.OnTriggerListener.NO_HANDLE) {
             mCallback.pokeWakelock();
-        }else{
+        }/*else{
 	    if(mSgsMusicControls){
 		if(am.isMusicActive() || mAlwaysSgsMusicControls)
 		  mMusicWidget.setVisibility(View.VISIBLE);
@@ -559,7 +559,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 		}else if(!am.isMusicActive()){
 		  mMusicWidget.setVisibility(View.GONE);
 		}
-	}
+	}*/
     } 
 
     /** {@inheritDoc} */
@@ -623,7 +623,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
     private void refreshAlarmDisplay() {
         mNextAlarm = mLockPatternUtils.getNextAlarm();
-        if (mNextAlarm != null && !mShowingInfo) {
+        if (mNextAlarm != null){// && !mShowingInfo) {
             mAlarmIcon = getContext().getResources().getDrawable(R.drawable.ic_lock_idle_alarm);
         }
         updateStatusLines();
@@ -642,7 +642,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
     }
 
     private void refreshBatteryStringAndIcon() {
-        if (!mShowingBatteryInfo && !mLockAlwaysBattery || mShowingInfo) {
+        if (!mShowingBatteryInfo){// && !mLockAlwaysBattery || mShowingInfo) {
             mCharging = null;
             return;
         }
@@ -725,14 +725,14 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
             mStatus1.setText(mCharging);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mChargingIcon, null, null, null);
-        } else if (mNextAlarm != null && mCharging == null && !mShowingInfo) {
+        } else if (mNextAlarm != null && mCharging == null){// && !mShowingInfo) {
             // next alarm only
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.INVISIBLE);
 
             mStatus1.setText(mNextAlarm);
             mStatus1.setCompoundDrawablesWithIntrinsicBounds(mAlarmIcon, null, null, null);
-        } else if (mCharging != null && mNextAlarm != null && !mShowingInfo) {
+        } else if (mCharging != null && mNextAlarm != null){// && !mShowingInfo) {
             // both charging and next alarm
             mStatus1.setVisibility(View.VISIBLE);
             mStatus2.setVisibility(View.VISIBLE);
@@ -934,17 +934,17 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
     /** {@inheritDoc} */
     public void onPause() {
-      if(mSgsMusicControls){
+      /*if(mSgsMusicControls){
 	mMusicWidget.onPause();
       }
-      mMissedEvent.onPause();
+      mMissedEvent.onPause();*/
     }
 
     /** {@inheritDoc} */
     public void onResume() {
         resetStatusInfo(mUpdateMonitor);
         mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyCallButton);
-		mLockscreenWallpaperUpdater.onResume();
+/*		mLockscreenWallpaperUpdater.onResume();
 	mLockscreenInfo.onResume();
       if(mSgsMusicControls){
 	mMusicWidget.onResume();
@@ -955,7 +955,7 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 	  mMusicWidget.setVisibility(View.GONE);
 	}
       }
-      mMissedEvent.onResume();
+      mMissedEvent.onResume();*/
     }
 
     /** {@inheritDoc} */
@@ -964,9 +964,9 @@ class RingLockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         mLockPatternUtils = null;
         mUpdateMonitor = null;
         mCallback = null;
-	mLockscreenInfo.cleanUp();
+	/*mLockscreenInfo.cleanUp();
 	mMusicWidget.cleanUp();
-	mMissedEvent.cleanUp();
+	mMissedEvent.cleanUp();*/
     }
 
     /** {@inheritDoc} */

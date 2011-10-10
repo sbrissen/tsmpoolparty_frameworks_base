@@ -17,6 +17,7 @@
 package com.android.internal.policy.impl;
 
 import android.content.res.Configuration;
+import android.content.Intent;
 
 /**
  * Within a keyguard, there may be several screens that need a callback
@@ -79,4 +80,6 @@ public interface KeyguardScreenCallback extends KeyguardViewCallback {
      * @return true
      */
     boolean doesFallbackUnlockScreenExist();
+
+    void setPendingIntent(Intent i);
 }

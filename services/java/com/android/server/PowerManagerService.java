@@ -465,11 +465,14 @@ class PowerManagerService extends IPowerManager.Stub
 
                 mAnimationSetting = 0;
 
-                mScreenOffAnimation = true;
+                mScreenOffAnimation = (Settings.System.getInt(mContext.getContentResolver(),
+                            Settings.System.CRT_OFF, 0) == 1);
+                mScreenOnAnimation = (Settings.System.getInt(mContext.getContentResolver(),
+                            Settings.System.CRT_ON, 0) == 1);
+
                 if (mScreenOffAnimation)
                     mAnimationSetting |= ANIM_SETTING_OFF;
 
-                mScreenOnAnimation = true;
                 if (mScreenOnAnimation)
                     mAnimationSetting |= ANIM_SETTING_ON;
             }

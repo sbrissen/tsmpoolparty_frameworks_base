@@ -2395,4 +2395,7 @@
     <string name="lockscreen_one_unread_message_count">1 unread message</string>
     <string name="lockscreen_n_missed_calls_count">%1$d missed calls</string>
     <string name="lockscreen_n_unread_messages_count">%1$d unread messages</string>
+    <string name="lockscreen_time_bottom_hint">TeamSbrissenMod</string>
+    <string name="lockscreen_call_bottom_hint">Missed Calls</string>
+    <string name="lockscreen_sms_bottom_hint" />
 </resources>

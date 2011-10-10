@@ -1206,6 +1206,9 @@ public final class Settings {
 	public static final String MISSED_MMS_EVENT = "missed_mms_event";
 	public static final String MISSED_EMAIL_EVENT = "missed_email_event";
 	public static final String USE_CUSTOM_LOCK_APPS = "use_custom_lock_apps";
+	public static final String CRT_ON = "crt_on";
+	public static final String CRT_OFF = "crt_off";
+
 
         public static final String[] LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES = new String[] {
 	    "lockscreen_custom_app_activity_1",

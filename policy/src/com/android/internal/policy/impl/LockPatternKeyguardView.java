@@ -78,6 +78,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase {
 
     private View mLockScreen;
     private View mUnlockScreen;
+    private Intent mPendingIntent;
 
     private boolean mScreenOn = false;
     private boolean mEnableFallback = false; // assume no fallback UI until we know better
@@ -307,6 +308,10 @@ public class LockPatternKeyguardView extends KeyguardViewBase {
             public void reportSuccessfulUnlockAttempt() {
                 mLockPatternUtils.reportSuccessfulPasswordAttempt();
             }
+
+	    public void setPendingIntent(Intent intent){
+		mPendingIntent = intent;
+	    }
         };
 
         /**
@@ -584,6 +589,9 @@ public class LockPatternKeyguardView extends KeyguardViewBase {
                     mUpdateMonitor, mKeyguardScreenCallback);
 	else if(lockScreen == 7)
 	    return new RingLockScreen(mContext, mConfiguration, mLockPatternUtils, mUpdateMonitor,
+                    mKeyguardScreenCallback);
+	else if(lockScreen == 8)
+	    return new MiuiLockScreen(mContext, mConfiguration, mLockPatternUtils, mUpdateMonitor,
                     mKeyguardScreenCallback);
         else
             return new LockScreen(mContext, mConfiguration, mLockPatternUtils, mUpdateMonitor,

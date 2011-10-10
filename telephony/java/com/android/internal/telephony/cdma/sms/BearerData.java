@@ -881,7 +881,7 @@ public final class BearerData {
             bData.messageType = inStream.read(4);
             // Samsung Fascinate parses messageId differently than other devices
             // fix it here so that incoming sms works correctly
-            if ("fascinatemtd".equals(SystemProperties.get("ro.product.device"))) {
+            if ("SCH-I500".equals(SystemProperties.get("ro.product.model"))) {
                 inStream.skip(4);
                 bData.messageId = inStream.read(8) << 8;
                 bData.messageId |= inStream.read(8);
