@@ -1244,50 +1244,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     }
 
-    public String getEventContact(int i){
-	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
-	return r.notification.contactCharSeq.toString();
-    }
-
-    public int getEventCount(int i){
-	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
-	return r.notification.missedCount;
-    }
-
-    public int getEventIndexWithReq(String pkg, int req){
-	int i = 0;
-	try{
-	  Iterator iter = mNotificationList.iterator();
-	  if(iter.hasNext()){
-	    NotificationRecord r = (NotificationRecord) iter.next();
-	    if(r.pkg.equals(pkg) && r.id == req){
-	      return i;
-	    }else{
-	      i++;
-	    }
-	  }
-	}catch(Exception ex){}
-	return -1;
-    }
-
-    public PendingIntent getEventIntent(int i){
-	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
-	return r.notification.contentIntent;
-    }
-
-    public NotificationInfo getNotificationInfo(String pkg, int req){
-	try{
-	    Iterator iter = mNotificationList.iterator();
-	    if(iter.hasNext()){
-		NotificationRecord r = (NotificationRecord) iter.next();
-		if(r.pkg.equals(pkg) && r.id == req){
-		  return new NotificationInfo(r.notification.missedCount, r.notification.contactCharSeq, r.notification.contentIntent);
-		}
-	    }
-	}catch(Exception ex){}
-	return null;
-    }
-
     // ======================================================================
     @Override
     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
