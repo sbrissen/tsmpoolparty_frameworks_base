@@ -53,6 +53,7 @@ import android.content.ActivityNotFoundException;
 import java.net.URISyntaxException;
 import com.android.internal.policy.impl.LockscreenInfo;
 import com.android.internal.policy.impl.MusicWidget;
+import com.android.internal.policy.impl.MissedEventWidget;
 
 import java.util.Date;
 import java.io.File;
@@ -94,6 +95,8 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
     private LinearLayout mMusicLayoutBottom;
     private LinearLayout mMusicLayoutTop;
     private MusicWidget mMusicWidget; 
+    private MissedEventWidget mMissedEvent;
+    private LinearLayout mMissedLayout;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -153,6 +156,9 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 
     private boolean mAlwaysSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS, 0) == 1);
+
+    private boolean mShowMissedEvent = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_MISSED_EVENT, 0) == 1);
 
     /**
      * The status of this lock screen.
@@ -257,6 +263,13 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         } else {
             inflater.inflate(R.layout.keyguard_screen_tab4_unlock_land, this, true);
         }
+
+	mMissedLayout = (LinearLayout) findViewById(R.id.missedevent);
+	mMissedEvent = new MissedEventWidget(context,callback);
+
+	if(mShowMissedEvent){	    
+	    mMissedLayout.addView(mMissedEvent);
+	}
 
         mCarrier = (TextView) findViewById(R.id.carrier);
         // Required for Marquee to work
@@ -916,6 +929,7 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
       if(mSgsMusicControls){
 	mMusicWidget.onPause();
       }
+      mMissedEvent.onPause();
     }
 
     /** {@inheritDoc} */
@@ -933,6 +947,7 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
 	  mMusicWidget.setVisibility(View.GONE);
 	}
       }
+      mMissedEvent.onResume();
     }
 
     /** {@inheritDoc} */
@@ -943,6 +958,7 @@ class Tab4LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpd
         mCallback = null;
 	mLockscreenInfo.cleanUp();
 	mMusicWidget.cleanUp();
+	mMissedEvent.cleanUp();
     }
 
     /** {@inheritDoc} */

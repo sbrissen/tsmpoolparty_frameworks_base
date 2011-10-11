@@ -2594,7 +2594,7 @@ class PowerManagerService extends IPowerManager.Stub
             mDimDelay = -1;
             mScreenOffDelay = 0;
         } else if ((mPokey & POKE_LOCK_MEDIUM_TIMEOUT) != 0) {
-            mKeylightDelay = 0x3a98;
+            mKeylightDelay = mShortKeylightDelay;
 	    //mKeylightDelay = MEDIUM_KEYLIGHT_DELAY;
             mDimDelay = -1;
             mScreenOffDelay = 0;

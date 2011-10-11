@@ -1200,8 +1200,11 @@ public final class Settings {
 	public static final String KEY_DAEMON_ON_OFF = "aw_daemon_service_key_service_status";
 	public static final String NUM_RECENT_APPS = "num_recent_apps";
 	public static final String LOCKSCREEN_CUSTOM_APP_TOGGLE = "lockscreen_custom_app_toggle";
-	
-
+	public static final String LOCKSCREEN_MISSED_EVENT = "lockscreen_missed_event";
+	public static final String LOCKSCREEN_MISSED_EVENT_TYPE = "lockscreen_missed_event_type";	
+	public static final String MISSED_PHONE_EVENT = "missed_phone_event";
+	public static final String MISSED_MMS_EVENT = "missed_mms_event";
+	public static final String MISSED_EMAIL_EVENT = "missed_email_event";
 
         public static final String[] LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES = new String[] {
 	    "lockscreen_custom_app_activity_1",

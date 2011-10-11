@@ -70,6 +70,13 @@
 		android:text="@string/emergency_calls_only"
 		android:textAppearance="?android:attr/textAppearanceSmall"
 		android:textColor="@color/white" />
+	<LinearLayout 
+	android:orientation="vertical" 
+	android:id="@+id/missedevent" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:layout_below="@id/carrier"
+	/>
 
 	<!-- time and date -->
 	<com.android.internal.widget.DigitalClock

@@ -53,6 +53,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import com.android.internal.policy.impl.LockscreenInfo;
 import com.android.internal.policy.impl.MusicWidget;
+import com.android.internal.policy.impl.MissedEventWidget;
 
 import java.util.Date;
 import java.io.File;
@@ -94,7 +95,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private LockscreenInfo mLockscreenInfo;
     private LinearLayout mMusicLayoutBottom;
     private LinearLayout mMusicLayoutTop;
-    private MusicWidget mMusicWidget;    
+    private MusicWidget mMusicWidget; 
+    private MissedEventWidget mMissedEvent;
+    private LinearLayout mMissedLayout;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -162,6 +165,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     private boolean mAlwaysSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS, 0) == 1);
+
+    private boolean mShowMissedEvent = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_MISSED_EVENT, 0) == 1);
 
     private boolean mUseRotaryLockscreen = (mLockscreenStyle == 1);
 
@@ -274,6 +280,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         } else {
             inflater.inflate(R.layout.keyguard_screen_rotary_unlock_land, this, true);
         }
+
+	mMissedLayout = (LinearLayout) findViewById(R.id.missedevent);
+	mMissedEvent = new MissedEventWidget(context,callback);
+
+	if(mShowMissedEvent){	    
+	    mMissedLayout.addView(mMissedEvent);
+	}
 
         mCarrier = (TextView) findViewById(R.id.carrier);
         // Required for Marquee to work
@@ -966,6 +979,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
       if(mSgsMusicControls){
 	mMusicWidget.onPause();
       }
+      mMissedEvent.onPause();
     }
 
     /** {@inheritDoc} */
@@ -983,6 +997,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	  mMusicWidget.setVisibility(View.GONE);
 	}
       }
+      mMissedEvent.onResume();
     }
 
     /** {@inheritDoc} */
@@ -994,6 +1009,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	mLockscreenWallpaperUpdater.cleanUp();
 	mLockscreenInfo.cleanUp();
 	mMusicWidget.cleanUp();
+	mMissedEvent.cleanUp();
     }
 
     /** {@inheritDoc} */

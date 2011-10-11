@@ -25,6 +25,7 @@ import android.app.INotificationManager;
 import android.app.ITransientNotification;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationInfo;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
@@ -66,6 +67,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /** {@hide} */
 public class NotificationManagerService extends INotificationManager.Stub
@@ -780,6 +782,15 @@ public class NotificationManagerService extends INotificationManager.Stub
                     }
                 }
                 sendAccessibilityEvent(notification, pkg);
+
+		if(pkg.equals("com.android.mms")){
+		    Settings.System.putInt(mContext.getContentResolver(), Settings.System.MISSED_MMS_EVENT,1);
+		}
+		if(pkg.equals("com.android.email")){
+		    Settings.System.putInt(mContext.getContentResolver(), Settings.System.MISSED_EMAIL_EVENT,1);
+		}
+		Intent notificationArrivedIntent = new Intent("com.android.server.NotificationManagerService.NotificationArrived");
+		mContext.sendBroadcast(notificationArrivedIntent);
             } else {
                 if (old != null && old.statusBarKey != null) {
                     long identity = Binder.clearCallingIdentity();
@@ -956,6 +967,16 @@ public class NotificationManagerService extends INotificationManager.Stub
                 cancelNotificationLocked(r);
                 updateLightsLocked();
             }
+	    
+	    if(pkg.equals("com.android.mms")){
+		Settings.System.putInt(mContext.getContentResolver(), Settings.System.MISSED_MMS_EVENT,0);
+	    }
+	    if(pkg.equals("com.android.email")){
+		Settings.System.putInt(mContext.getContentResolver(), Settings.System.MISSED_EMAIL_EVENT,0);
+	    }
+	Intent notificationRemovedIntent = new Intent("com.android.server.NotificationManagerService.NotificationRemoved");
+	mContext.sendBroadcast(notificationRemovedIntent);
+      
         }
     }
 
@@ -1222,6 +1243,50 @@ public class NotificationManagerService extends INotificationManager.Stub
         synchronized (mNotificationList) {
             updateLightsLocked();
         }
+    }
+
+    public String getEventContact(int i){
+	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
+	return r.notification.contactCharSeq.toString();
+    }
+
+    public int getEventCount(int i){
+	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
+	return r.notification.missedCount;
+    }
+
+    public int getEventIndexWithReq(String pkg, int req){
+	int i = 0;
+	try{
+	  Iterator iter = mNotificationList.iterator();
+	  if(iter.hasNext()){
+	    NotificationRecord r = (NotificationRecord) iter.next();
+	    if(r.pkg.equals(pkg) && r.id == req){
+	      return i;
+	    }else{
+	      i++;
+	    }
+	  }
+	}catch(Exception ex){}
+	return -1;
+    }
+
+    public PendingIntent getEventIntent(int i){
+	NotificationRecord r = (NotificationRecord) mNotificationList.get(i);
+	return r.notification.contentIntent;
+    }
+
+    public NotificationInfo getNotificationInfo(String pkg, int req){
+	try{
+	    Iterator iter = mNotificationList.iterator();
+	    if(iter.hasNext()){
+		NotificationRecord r = (NotificationRecord) iter.next();
+		if(r.pkg.equals(pkg) && r.id == req){
+		  return new NotificationInfo(r.notification.missedCount, r.notification.contactCharSeq, r.notification.contentIntent);
+		}
+	    }
+	}catch(Exception ex){}
+	return null;
     }
 
     // ======================================================================

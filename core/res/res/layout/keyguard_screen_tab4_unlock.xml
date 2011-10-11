@@ -69,7 +69,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
 	android:visibility="gone"
         />
-
+   	<LinearLayout 
+	android:orientation="vertical" 
+	android:id="@+id/missedevent" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:layout_below="@id/carrier"
+	/>
     <!-- "emergency calls only" shown when sim is missing or PUKd -->
     <TextView
         android:id="@+id/emergencyCallText"

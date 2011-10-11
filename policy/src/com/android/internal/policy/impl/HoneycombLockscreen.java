@@ -51,6 +51,7 @@ import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import com.android.internal.policy.impl.LockscreenInfo;
 import com.android.internal.policy.impl.MusicWidget;
+import com.android.internal.policy.impl.MissedEventWidget;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -142,6 +143,8 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     private boolean mMenuUnlockScreen = false;
     private LockscreenWallpaperUpdater mLockscreenWallpaperUpdater;
     private RelativeLayout mMainLayout;
+    private MissedEventWidget mMissedEvent;
+    private LinearLayout mMissedLayout;
 
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
@@ -175,6 +178,8 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     private boolean mAlwaysSgsMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_SGSMUSIC_CONTROLS, 0) == 1);
 
+    private boolean mShowMissedEvent = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_MISSED_EVENT, 0) == 1);
 
     /**
 * The status of this lock screen.
@@ -282,6 +287,13 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         } else {
             inflater.inflate(R.layout.keyguard_screen_honey_landscape, this, true);
         }
+
+	mMissedLayout = (LinearLayout) findViewById(R.id.missedevent);
+	mMissedEvent = new MissedEventWidget(context,callback);
+
+	if(mShowMissedEvent){	    
+	    mMissedLayout.addView(mMissedEvent);
+	}
 
         mCarrier = (TextView) findViewById(R.id.carrier);
         // Required for Marquee to work
@@ -858,6 +870,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
       if(mSgsMusicControls){
 	mMusicWidget.onPause();
       }
+      mMissedEvent.onPause();
     }
 
     /** {@inheritDoc} */
@@ -876,6 +889,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
 	  mMusicWidget.setVisibility(View.GONE);
 	}
       }
+      mMissedEvent.onResume();
     }
 
     /** {@inheritDoc} */
@@ -886,6 +900,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mCallback = null;
 	mLockscreenInfo.cleanUp();
 	mMusicWidget.cleanUp();
+	mMissedEvent.cleanUp();
     }
 
     /** {@inheritDoc} */
