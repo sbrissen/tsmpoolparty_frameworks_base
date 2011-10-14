@@ -64,7 +64,7 @@ import java.util.Date;
 */
 class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         KeyguardUpdateMonitor.InfoCallback, KeyguardUpdateMonitor.SimStateCallback,
-        UnlockRing.OnTriggerListener {
+        UnlockRing.OnHoneyTriggerListener {
 
     private static final boolean DBG = true;
 
@@ -424,7 +424,7 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mSilentMode = isSilentMode();
 
-        mSelector.setOnTriggerListener(this);
+        mSelector.setOnHoneyTriggerListener(this);
 
         resetStatusInfo(updateMonitor);
 
@@ -527,15 +527,15 @@ class HoneycombLockscreen extends LinearLayout implements KeyguardScreen,
     }
 
     /** {@inheritDoc} */
-    public void onTrigger(View v, int whichHandle) {
+    public void onHoneyTrigger(View v, int whichHandle) {
            mCallback.goToUnlockScreen();
 
         
     }
 
     /** {@inheritDoc} */
-    public void onGrabbedStateChange(View v, int grabbedState) {
-        if (grabbedState != UnlockRing.OnTriggerListener.NO_HANDLE) {
+    public void onHoneyGrabbedStateChange(View v, int grabbedState) {
+        if (grabbedState != UnlockRing.OnHoneyTriggerListener.NO_HANDLE) {
             mCallback.pokeWakelock();
         }else{
 	    if(mSgsMusicControls){

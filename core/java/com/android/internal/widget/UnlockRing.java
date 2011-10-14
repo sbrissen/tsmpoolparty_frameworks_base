@@ -1,58 +1,45 @@
+
 package com.android.internal.widget;
 
 /*
-* Copyright (C) 2009 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2009 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import android.provider.Settings;
-import android.content.ContentResolver;
+import com.android.internal.R;
+import com.android.internal.widget.SlidingTab.OnTriggerListener;
+
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
-import com.android.internal.R;
 
-/**
-* A special widget containing two Sliders and a threshold for each. Moving
-* either slider beyond the threshold will cause the registered
-* OnTriggerListener.onTrigger() to be called with whichHandle being
-* {@link OnTriggerListener#UNLOCK_HANDLE} or
-* {@link OnTriggerListener#RIGHT_HANDLE} Equivalently, selecting a tab will
-* result in a call to {@link OnTriggerListener#onGrabbedStateChange(View, int)}
-* with one of these two states. Releasing the tab will result in whichHandle
-* being {@link OnTriggerListener#NO_HANDLE}.
-*/
 public class UnlockRing extends ViewGroup {
     private static final String TAG = "UnlockRing";
 
@@ -76,9 +63,9 @@ public class UnlockRing extends ViewGroup {
     private static final int ANIM_TARGET_TIME = 500; // Time to show targets (in
                                                      // ms)
 
-    private OnTriggerListener mOnTriggerListener;
+    private OnHoneyTriggerListener mOnTriggerListener;
 
-    private int mGrabbedState = OnTriggerListener.NO_HANDLE;
+    private int mGrabbedState = OnHoneyTriggerListener.NO_HANDLE;
 
     private boolean mTriggered = false;
 
@@ -87,8 +74,8 @@ public class UnlockRing extends ViewGroup {
     private float mDensity; // used to scale dimensions for bitmaps.
 
     /**
-* Either {@link #HORIZONTAL} or {@link #VERTICAL}.
-*/
+     * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
+     */
     private int mOrientation;
 
     private Ring ring;
@@ -97,22 +84,33 @@ public class UnlockRing extends ViewGroup {
 
     private boolean mAnimating;
 
+    private static final long VIBRATE_SHORT = 30;
+
+    private static final long VIBRATE_LONG = 40;
+
+   // private boolean mEnableAppLauncherMode = (Settings.System.getInt(getContext().getContentResolver(),
+   // 	    Settings.System.USE_CUSTOM_LOCK_APPS, 0) == 1);
+
+    private boolean mEnableAppLauncherMode = false;
+
     /**
-* unlocks when hitting outer ring if true, otherwise it will launch an app
-* based on the quadrant it is in
-*/
+     * unlocks when hitting outer ring if true, otherwise it will launch an app
+     * based on the quadrant it is in
+     */
     private boolean mUnlockMode;
 
     private Rect mTmpRect;
 
-    
     public void enableUnlockMode() {
         mUnlockMode = true;
+        ring.unlocker.getDrawable().setAlpha(255);
+        refreshDrawableState();
+        invalidate();
     }
-    
+
     /**
-* Listener used to reset the view when the current animation completes.
-*/
+     * Listener used to reset the view when the current animation completes.
+     */
     private final AnimationListener mAnimationDoneListener = new AnimationListener() {
         public void onAnimationStart(Animation animation) {
 
@@ -128,20 +126,20 @@ public class UnlockRing extends ViewGroup {
     };
 
     /**
-* Interface definition for a callback to be invoked when a tab is triggered
-* by moving it beyond a threshold.
-*/
-    public interface OnTriggerListener {
+     * Interface definition for a callback to be invoked when a tab is triggered
+     * by moving it beyond a threshold.
+     */
+    public interface OnHoneyTriggerListener {
         /**
-* The interface was triggered because the user let go of the handle
-* without reaching the threshold.
-*/
+         * The interface was triggered because the user let go of the handle
+         * without reaching the threshold.
+         */
         public static final int NO_HANDLE = 0;
 
         /**
-* The interface was triggered because the user grabbed the left handle
-* and moved it past the threshold.
-*/
+         * The interface was triggered because the user grabbed the left handle
+         * and moved it past the threshold.
+         */
         public static final int UNLOCK_HANDLE = 1;
 
         public static final int POKE_LOCK = 2;
@@ -155,36 +153,34 @@ public class UnlockRing extends ViewGroup {
         public static final int QUADRANT_4 = 6;
 
         /**
-* Called when the user moves a handle beyond the threshold.
-*
-* @param v The view that was triggered.
-* @param whichHandle Which "dial handle" the user grabbed, either
-* {@link #UNLOCK_HANDLE}, {@link #RIGHT_HANDLE}.
-*/
-        void onTrigger(View v, int whichHandle);
+         * Called when the user moves a handle beyond the threshold.
+         * 
+         * @param v The view that was triggered.
+         * @param whichHandle Which "dial handle" the user grabbed, either
+         *            {@link #UNLOCK_HANDLE}, {@link #RIGHT_HANDLE}.
+         */
+        void onHoneyTrigger(View v, int whichHandle);
 
         /**
-* Called when the "grabbed state" changes (i.e. when the user either
-* grabs or releases one of the handles.)
-*
-* @param v the view that was triggered
-* @param grabbedState the new state: {@link #NO_HANDLE},
-* {@link #UNLOCK_HANDLE}, or {@link #RIGHT_HANDLE}.
-*/
-        void onGrabbedStateChange(View v, int grabbedState);
+         * Called when the "grabbed state" changes (i.e. when the user either
+         * grabs or releases one of the handles.)
+         * 
+         * @param v the view that was triggered
+         */
+        void onHoneyGrabbedStateChange(View v, int grabbedState);
     }
 
     /**
-* Simple container class for all things pertinent to a slider. A slider
-* consists of 3 Views: {@link #unlocker} is the tab shown on the screen in
-* the default state. {@link #text} is the view revealed as the user slides
-* the tab out. {@link #unlockRing} is the target the user must drag the
-* slider past to trigger the slider.
-*/
+     * Simple container class for all things pertinent to a slider. A slider
+     * consists of 3 Views: {@link #unlocker} is the tab shown on the screen in
+     * the default state. {@link #text} is the view revealed as the user slides
+     * the tab out. {@link #unlockRing} is the target the user must drag the
+     * slider past to trigger the slider.
+     */
     private static class Ring {
         /**
-* States for the view.
-*/
+         * States for the view.
+         */
         private static final int STATE_NORMAL = 0;
 
         private static final int STATE_PRESSED = 1;
@@ -204,13 +200,13 @@ public class UnlockRing extends ViewGroup {
         private int maxRadius;
 
         /**
-* Constructor
-*
-* @param parent the container view of this one
-* @param tabId drawable for the tab
-* @param barId drawable for the bar
-* @param targetId drawable for the target
-*/
+         * Constructor
+         * 
+         * @param parent the container view of this one
+         * @param tabId drawable for the tab
+         * @param barId drawable for the bar
+         * @param targetId drawable for the target
+         */
         Ring(ViewGroup parent, int unlockId, int unlockHalo, int targetId) {
             // Create tab
             unlocker = new ImageView(parent.getContext());
@@ -302,14 +298,14 @@ public class UnlockRing extends ViewGroup {
         }
 
         /**
-* Layout the given widgets within the parent.
-*
-* @param l the parent's left border
-* @param t the parent's top border
-* @param r the parent's right border
-* @param b the parent's bottom border
-* @param alignment which side to align the widget to
-*/
+         * Layout the given widgets within the parent.
+         * 
+         * @param l the parent's left border
+         * @param t the parent's top border
+         * @param r the parent's right border
+         * @param b the parent's bottom border
+         * @param alignment which side to align the widget to
+         */
         void layout(int l, int t, int r, int b) {
             final Drawable tabBackground = unlocker.getBackground();
             final int handleWidth = tabBackground.getIntrinsicWidth();
@@ -352,8 +348,8 @@ public class UnlockRing extends ViewGroup {
         }
 
         /**
-* Ensure all the dependent widgets are measured.
-*/
+         * Ensure all the dependent widgets are measured.
+         */
         public void measure() {
             unlocker.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -362,21 +358,21 @@ public class UnlockRing extends ViewGroup {
         }
 
         /**
-* Get the measured tab width. Must be called after
-* {@link Slider#measure()}.
-*
-* @return
-*/
+         * Get the measured tab width. Must be called after
+         * {@link Slider#measure()}.
+         * 
+         * @return
+         */
         public int getTabWidth() {
             return unlocker.getMeasuredWidth();
         }
 
         /**
-* Get the measured tab width. Must be called after
-* {@link Slider#measure()}.
-*
-* @return
-*/
+         * Get the measured tab width. Must be called after
+         * {@link Slider#measure()}.
+         * 
+         * @return
+         */
         public int getTabHeight() {
             return unlocker.getMeasuredHeight();
         }
@@ -390,13 +386,13 @@ public class UnlockRing extends ViewGroup {
         }
 
         /**
-* Start animating the slider. Note we need two animations since an
-* Animator keeps internal state of the invalidation region which is
-* just the view being animated.
-*
-* @param anim1
-* @param anim2
-*/
+         * Start animating the slider. Note we need two animations since an
+         * Animator keeps internal state of the invalidation region which is
+         * just the view being animated.
+         * 
+         * @param anim1
+         * @param anim2
+         */
         public void startAnimation(Animation anim1, Animation anim2) {
             unlocker.startAnimation(anim1);
         }
@@ -414,8 +410,8 @@ public class UnlockRing extends ViewGroup {
     }
 
     /**
-* Constructor used when this widget is created from a layout file.
-*/
+     * Constructor used when this widget is created from a layout file.
+     */
     public UnlockRing(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -478,19 +474,21 @@ public class UnlockRing extends ViewGroup {
         // boolean unlockerHit = mTmpRect.contains((int) x, (int) y);
         boolean unlockerHit = inHalo(x, y);
 
-        if (inRing(x, y) && !unlockerHit) {
-            Log.d(TAG, "Touched at : (" + x + ", " + y + ") and unlocker is "
-                    + (unlockerHit ? "hit" : "not hit"));
-            mUnlockMode = !mUnlockMode;
-            if (mUnlockMode) {
-                ring.unlocker.getDrawable().setAlpha(255);
-            } else {
-                ring.unlocker.getDrawable().setAlpha(0);
+        if (mEnableAppLauncherMode) {
+            if (inRing(x, y) && !unlockerHit) {
+                Log.d(TAG, "Touched at : (" + x + ", " + y + ") and  unlocker is "
+                        + (unlockerHit ? "hit" : "not hit"));
+                mUnlockMode = !mUnlockMode;
+                if (mUnlockMode) {
+                    ring.unlocker.getDrawable().setAlpha(255);
+                } else {
+                    ring.unlocker.getDrawable().setAlpha(0);
+                }
+                ring.unlocker.refreshDrawableState();
+                refreshDrawableState();
+                invalidate();
+                return false;
             }
-            ring.unlocker.refreshDrawableState();
-            refreshDrawableState();
-            invalidate();
-            return false;
         }
 
         if ((!mTracking && !unlockerHit) || mAnimating) {
@@ -502,9 +500,9 @@ public class UnlockRing extends ViewGroup {
 
                 mTracking = true;
                 mTriggered = false;
-                vibrate();
+                vibrate(VIBRATE_LONG);
                 if (unlockerHit) {
-                    setGrabbedState(OnTriggerListener.UNLOCK_HANDLE);
+                    setGrabbedState(OnHoneyTriggerListener.UNLOCK_HANDLE);
                 }
 
                 ring.setState(Ring.STATE_PRESSED);
@@ -517,11 +515,11 @@ public class UnlockRing extends ViewGroup {
     }
 
     /**
-* Reset the tabs to their original state and stop any existing animation.
-* Animate them back into place if animate is true.
-*
-* @param animate
-*/
+     * Reset the tabs to their original state and stop any existing animation.
+     * Animate them back into place if animate is true.
+     * 
+     * @param animate
+     */
     public void reset(boolean animate) {
         ring.reset(animate);
         if (!animate) {
@@ -539,6 +537,12 @@ public class UnlockRing extends ViewGroup {
         super.setVisibility(visibility);
     }
 
+    /**
+     * sets the quadrant based on the current position
+     * 
+     * @param absX
+     * @param absY
+     */
     public void setQuadrant(float absX, float absY) {
         // set quadrant
         double x = (double) absX - ring.alignment_x;
@@ -558,6 +562,12 @@ public class UnlockRing extends ViewGroup {
         Log.d(TAG, "(" + x + ", " + y + ") quadrant: " + mQuadrant);
     }
 
+    /**
+     * applies a color filter on the outer radius based on the quadrant
+     * 
+     * @param x
+     * @param y
+     */
     public void updateColor(float x, float y) {
         ring.unlockRing.clearColorFilter();
 
@@ -602,44 +612,41 @@ public class UnlockRing extends ViewGroup {
                         thresholdReached = !inRing(x, y);
 
                         if (!thresholdReached) {
-                            setQuadrant(x, y);
-                            updateColor(x, y);
+                            if (mEnableAppLauncherMode) {
+                                setQuadrant(x, y);
+                                updateColor(x, y);
+                            }
                             moveHandle(x, y);
                         }
 
-                        if (mUnlockMode && !mTriggered && thresholdReached) {
+                        if (!mTriggered && thresholdReached) {
+
+                            if (!mUnlockMode && mEnableAppLauncherMode) {
+                                switch (mQuadrant) {
+                                    case 1:
+                                        dispatchTriggerEvent(OnHoneyTriggerListener.QUADRANT_1);
+                                        break;
+                                    case 2:
+                                        dispatchTriggerEvent(OnHoneyTriggerListener.QUADRANT_2);
+                                        break;
+                                    case 3:
+                                        dispatchTriggerEvent(OnHoneyTriggerListener.QUADRANT_3);
+                                        break;
+                                    case 4:
+                                        dispatchTriggerEvent(OnHoneyTriggerListener.QUADRANT_4);
+                                        break;
+                                    default:
+                                        dispatchTriggerEvent(OnHoneyTriggerListener.NO_HANDLE);
+                                        break;
+
+                                }
+                            } else {
+                                dispatchTriggerEvent(OnHoneyTriggerListener.UNLOCK_HANDLE);
+                            }
+
                             mTriggered = true;
                             mTracking = false;
-                            // mCurrentSlider.setState(Ring.STATE_ACTIVE);
-                            // boolean isLeft = mCurrentSlider == ring;
-                            dispatchTriggerEvent(OnTriggerListener.UNLOCK_HANDLE);
-
-                            mUnlockMode = true;
-                            // startAnimating(isLeft ? mHoldLeftOnTransition :
-                            // mHoldRightOnTransition);
-                            setGrabbedState(OnTriggerListener.NO_HANDLE);
-                        } else if (!mUnlockMode && !mTriggered && thresholdReached) {
-                            if (false)
-                                Log.d(TAG, "unlocking quadrant: " + mQuadrant);
-
-                            switch (mQuadrant) {
-                                case 1:
-                                    dispatchTriggerEvent(OnTriggerListener.QUADRANT_1);
-                                    break;
-                                case 2:
-                                    dispatchTriggerEvent(OnTriggerListener.QUADRANT_2);
-                                    break;
-                                case 3:
-                                    dispatchTriggerEvent(OnTriggerListener.QUADRANT_3);
-                                    break;
-                                case 4:
-                                    dispatchTriggerEvent(OnTriggerListener.QUADRANT_4);
-                                    break;
-                                default:
-                                    dispatchTriggerEvent(OnTriggerListener.NO_HANDLE);
-                                    break;
-
-                            }
+                            enableUnlockMode();
                             setGrabbedState(OnTriggerListener.NO_HANDLE);
                         }
                         break;
@@ -666,6 +673,13 @@ public class UnlockRing extends ViewGroup {
         return mTracking || super.onTouchEvent(event);
     }
 
+    /**
+     * checks whether x & y are within the big outer-radius
+     * 
+     * @param xPos
+     * @param yPos
+     * @return
+     */
     public boolean inRing(float xPos, float yPos) {
         double x = (double) Math.abs(xPos - ring.alignment_x);
         double y = (double) Math.abs(yPos - ring.alignment_y);
@@ -680,7 +694,10 @@ public class UnlockRing extends ViewGroup {
         Log.d(TAG, "Max radius: " + r);
         Log.d(TAG, "Grab radius: " + grabRadius);
 
-        if (grabRadius < r)
+        // pad it a little
+        final int padding = 0;
+
+        if (grabRadius < (r + padding))
             return true;
 
         return false;
@@ -696,6 +713,9 @@ public class UnlockRing extends ViewGroup {
 
         // give a little more room to play with when moving
         if (mTracking) {
+            r += 15;
+        } else {
+            // give more padding to hit the unlocker easier
             r += 20;
         }
 
@@ -706,77 +726,9 @@ public class UnlockRing extends ViewGroup {
         return false;
     }
 
-    void startAnimating(final boolean holdAfter) {
+    // maybe write ripple animation here?
+    void startAnimating() {
 
-        mAnimating = true;
-        final Animation trans1;
-        final Animation trans2;
-        final Ring slider = ring;
-        final int dx;
-        final int dy;
-        if (isHorizontal()) {
-            int right = slider.unlocker.getRight();
-            int width = slider.unlocker.getWidth();
-            int left = slider.unlocker.getLeft();
-            int viewWidth = getWidth();
-            int holdOffset = holdAfter ? 0 : width; // how much of tab to show
-                                                    // at the end of anim
-            dx = slider == ring ? -(right + viewWidth - holdOffset) : (viewWidth - left)
-                    + viewWidth - holdOffset;
-            dy = 0;
-        } else {
-            int top = slider.unlocker.getTop();
-            int bottom = slider.unlocker.getBottom();
-            int height = slider.unlocker.getHeight();
-            int viewHeight = getHeight();
-            int holdOffset = holdAfter ? 0 : height; // how much of tab to show
-                                                     // at end of anim
-            dx = 0;
-            dy = slider == ring ? (top + viewHeight - holdOffset) : -((viewHeight - bottom)
-                    + viewHeight - holdOffset);
-        }
-        trans1 = new TranslateAnimation(0, dx, 0, dy);
-        trans1.setDuration(ANIM_DURATION);
-        trans1.setInterpolator(new LinearInterpolator());
-        trans1.setFillAfter(true);
-        trans2 = new TranslateAnimation(0, dx, 0, dy);
-        trans2.setDuration(ANIM_DURATION);
-        trans2.setInterpolator(new LinearInterpolator());
-        trans2.setFillAfter(true);
-
-        trans1.setAnimationListener(new AnimationListener() {
-            public void onAnimationEnd(Animation animation) {
-                Animation anim;
-                if (holdAfter) {
-                    anim = new TranslateAnimation(dx, dx, dy, dy);
-                    anim.setDuration(1000); // plenty of time for transitions
-                    mAnimating = false;
-                } else {
-                    anim = new AlphaAnimation(0.5f, 1.0f);
-                    anim.setDuration(ANIM_DURATION);
-                    resetView();
-                }
-                anim.setAnimationListener(mAnimationDoneListener);
-
-                /*
-* Animation can be the same for these since the animation just
-* holds
-*/
-                ring.startAnimation(anim, anim);
-            }
-
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-        });
-
-        slider.hideTarget();
-        slider.startAnimation(trans1, trans2);
     }
 
     private void onAnimationDone() {
@@ -823,14 +775,14 @@ public class UnlockRing extends ViewGroup {
     }
 
     /**
-* Sets the left handle icon to a given resource. The resource should refer
-* to a Drawable object, or use 0 to remove the icon.
-*
-* @param iconId the resource ID of the icon drawable
-* @param targetId the resource of the target drawable
-* @param barId the resource of the bar drawable (stateful)
-* @param tabId the resource of the
-*/
+     * Sets the left handle icon to a given resource. The resource should refer
+     * to a Drawable object, or use 0 to remove the icon.
+     * 
+     * @param iconId the resource ID of the icon drawable
+     * @param targetId the resource of the target drawable
+     * @param barId the resource of the bar drawable (stateful)
+     * @param tabId the resource of the
+     */
 
     public void setRingResources(int iconId, int targetId, int barId) {
         ring.setIcon(iconId);
@@ -839,61 +791,46 @@ public class UnlockRing extends ViewGroup {
     }
 
     /**
-* Sets the right handle icon to a given resource. The resource should refer
-* to a Drawable object, or use 0 to remove the icon.
-*
-* @param iconId the resource ID of the icon drawable
-* @param targetId the resource of the target drawable
-* @param barId the resource of the bar drawable (stateful)
-* @param tabId the resource of the
-*/
-
-    /**
-* Triggers haptic feedback.
-*/
-    private synchronized void vibrate() {
-        ContentResolver cr = mContext.getContentResolver();
-        final boolean hapticsEnabled = Settings.System.getInt(cr,
-                Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) == 1;
-    /*    if (hapticsEnabled) {
-            long[] hapFeedback = Settings.System.getLongArray(cr,
-                    Settings.System.HAPTIC_DOWN_ARRAY, new long[] {
-                        0
-                    });
-            mVibrator.vibrate(hapFeedback, -1);
-        } */
-    }
-
-    /**
-* Registers a callback to be invoked when the user triggers an event.
-*
-* @param listener the OnDialTriggerListener to attach to this view
-*/
-    public void setOnTriggerListener(OnTriggerListener listener) {
+     * Registers a callback to be invoked when the user triggers an event.
+     * 
+     * @param listener the OnDialTriggerListener to attach to this view
+     */
+    public void setOnHoneyTriggerListener(OnHoneyTriggerListener listener) {
         mOnTriggerListener = listener;
     }
 
     /**
-* Dispatches a trigger event to listener. Ignored if a listener is not set.
-*
-* @param whichHandle the handle that triggered the event.
-*/
+     * Dispatches a trigger event to listener. Ignored if a listener is not set.
+     * 
+     * @param whichHandle the handle that triggered the event.
+     */
     private void dispatchTriggerEvent(int whichHandle) {
-        vibrate();
+        vibrate(VIBRATE_LONG);
         if (mOnTriggerListener != null) {
-            mOnTriggerListener.onTrigger(this, whichHandle);
+            mOnTriggerListener.onHoneyTrigger(this, whichHandle);
         }
     }
 
     /**
-* Sets the current grabbed state, and dispatches a grabbed state change
-* event to our listener.
-*/
+     * Triggers haptic feedback.
+     */
+    private synchronized void vibrate(long duration) {
+        if (mVibrator == null) {
+            mVibrator = (android.os.Vibrator) getContext().getSystemService(
+                    Context.VIBRATOR_SERVICE);
+        }
+        mVibrator.vibrate(duration);
+    }
+
+    /**
+     * Sets the current grabbed state, and dispatches a grabbed state change
+     * event to our listener.
+     */
     private void setGrabbedState(int newState) {
         if (newState != mGrabbedState) {
             mGrabbedState = newState;
             if (mOnTriggerListener != null) {
-                mOnTriggerListener.onGrabbedStateChange(this, mGrabbedState);
+                mOnTriggerListener.onHoneyGrabbedStateChange(this, mGrabbedState);
             }
         }
     }

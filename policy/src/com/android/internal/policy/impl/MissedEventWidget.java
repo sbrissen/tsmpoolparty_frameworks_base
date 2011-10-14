@@ -17,7 +17,7 @@ import android.os.Handler;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import com.android.internal.widget.SlidingTab;
-import com.android.internal.widget.RingSelector;
+import com.android.internal.policy.impl.MissedEventRing;
 import android.widget.RelativeLayout;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -43,13 +43,17 @@ import android.provider.Settings;
 
 import com.android.internal.R;
 
-public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTriggerListener, RingSelector.OnRingTriggerListener {
+public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTriggerListener, MissedEventRing.OnRingTriggerListener {
 
   private static final String MISSED_EVENT_ARRIVED = "com.android.server.NotificationManagerService.NotificationArrived";
   private static final String MISSED_EVENT_REMOVED = "com.android.server.NotificationManagerService.NotificationRemoved";
   private static final String MISSED_PHONE_EVENT_ARRIVED = "com.android.phone.NotificationMgr.MissedPhoneNotification";
 
   private static final String TAG = "MissedEventWidget";
+
+  private static final String MMS_INTENT = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.mms/.ui.ConversationList;end";
+  private static final String EMAIL_INTENT = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.email/.activity.MessageList;end";
+  private static final String PHONE_INTENT = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.contacts/.DialtactsActivity;end";
 
   private final String CALL_PKG;
   private final boolean DEBUG;
@@ -60,7 +64,7 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
   private KeyguardScreenCallback mCallback;
   private Handler mHandler;
   private SlidingTab mSelector;
-  private RingSelector mRingSelector;
+  private MissedEventRing mRingSelector;
   private Context mContext;
   boolean nCallCount = false;
   boolean nMsgCount = false;
@@ -128,15 +132,9 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
       mSelector.setLeftVisibility(View.INVISIBLE);
       mSelector.setRightVisibility(View.INVISIBLE);
     }else{      
-      mRingSelector = (RingSelector) findViewById(R.id.ringselector);
-      //mRingSelector.setHoldAfterTrigger(true,true);
-        mRingSelector.setLeftRingResources(
-                R.drawable.unlock_missed_call_icon,
-                R.drawable.jog_tab_target_green,
-                R.drawable.jog_ring_ring_green);
-     // mRingSelector.setLeftTabResources(R.drawable.unlock_missed_call_icon,R.drawable.unlock_cue_left,R.drawable.jog_tab_bar_left_missed_call,R.drawable.jog_tab_left_unlock_missed_call,"0");
-      //mRingSelector.setRightTabResources(R.drawable.unlock_unread_message_icon,R.drawable.unlock_cue_right,R.drawable.jog_tab_bar_right_unread_msg,R.drawable.jog_tab_right_unlock_unread_msg,"0");
-      mRingSelector.setRightRingResources(R.drawable.unlock_unread_message_icon,R.drawable.jog_tab_target_yellow,R.drawable.jog_ring_ring_gray);
+      mRingSelector = (MissedEventRing) findViewById(R.id.ringselector);
+      mRingSelector.setLeftRingResources(R.drawable.unlock_missed_call_icon,R.drawable.jog_tab_target_red,R.drawable.jog_ring_ring_pressed_red, null);
+      mRingSelector.setRightRingResources(R.drawable.unlock_unread_message_icon,R.drawable.jog_tab_target_yellow,R.drawable.jog_ring_ring_pressed_yellow, null);
       mRingSelector.setOnRingTriggerListener(this);
       mRingSelector.setVisibility(View.VISIBLE);
       mRingSelector.setLeftVisibility(View.INVISIBLE);
@@ -156,16 +154,11 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
     Log.i("MissedEventWidget",new StringBuilder().append("Missed Mms: ").append(nMsgCount).toString());  
     Log.i("MissedEventWidget",new StringBuilder().append("Missed Email: ").append(nEmailCount).toString());   
 
-/*      if(nCallCount){  
-	mSelector.setLeftHintText("Missed Call(s)"); 
-      }
-      if(nMsgCount){
-	mSelector.setRightHintText("Missed Message(s)");
-      }
-*/
     if(mUseTabs){
       mSelector.setLeftIconText("Phone");
       mSelector.setLeftHintText("Missed Call(s)"); 
+    }else{
+      mRingSelector.setLeftIconText("Phone");
     }
 
     if(nMsgCount && mUseTabs){
@@ -174,6 +167,10 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
     }else if(nEmailCount && mUseTabs){
       mSelector.setRightIconText("Email");
       mSelector.setRightHintText("New Email(s)");
+    }else if(nMsgCount && !mUseTabs){
+      mRingSelector.setRightIconText("Sms");
+    }else if(nEmailCount && !mUseTabs){
+      mRingSelector.setRightIconText("Email");
     }
 
     if(nCallCount && (nMsgCount || nEmailCount)){
@@ -246,12 +243,12 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
 	}else{
 	 try {
 	  if(nMsgCount){
-             i = Intent.parseUri("#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.mms/.ui.ConversationList;end", 0);
+             i = Intent.parseUri(MMS_INTENT, 0);
              i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             mContext.startActivity(i);
 	  }else if(nEmailCount){
-	     i = Intent.parseUri("#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.email/.activity.MessageList;end", 0);
+	     i = Intent.parseUri(EMAIL_INTENT, 0);
              i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             mContext.startActivity(i);
@@ -263,7 +260,7 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
 	}
       }else{
 	 try {
-	     i = Intent.parseUri("#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.contacts/.DialtactsActivity;end", 0);
+	     i = Intent.parseUri(PHONE_INTENT, 0);
              i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             mContext.startActivity(i);
@@ -282,10 +279,34 @@ public class MissedEventWidget extends RelativeLayout implements SlidingTab.OnTr
     mCallback.goToUnlockScreen();
   }
     public void onRingTrigger(View v, int whichRing, int whichApp) {
-        if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
-            mCallback.goToUnlockScreen();
-        } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
-            mCallback.goToUnlockScreen();
+	Intent i;
+        if (whichRing == MissedEventRing.OnRingTriggerListener.RIGHT_RING) {
+	 try {
+	  if(nMsgCount){
+             i = Intent.parseUri(MMS_INTENT, 0);
+             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            mContext.startActivity(i);
+	  }else if(nEmailCount){
+	     i = Intent.parseUri(EMAIL_INTENT, 0);
+             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            mContext.startActivity(i);
+	  } 
+             mCallback.goToUnlockScreen();
+	  } catch (URISyntaxException e) {
+          } catch (ActivityNotFoundException e) {
+          }
+      } else if (whichRing == MissedEventRing.OnRingTriggerListener.LEFT_RING) {
+         	 try {
+	     i = Intent.parseUri(PHONE_INTENT, 0);
+             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            mContext.startActivity(i);
+	    mCallback.goToUnlockScreen();
+	  } catch (URISyntaxException e) {
+          } catch (ActivityNotFoundException e) {
+          }
         }
     }
 

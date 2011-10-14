@@ -22,6 +22,7 @@
     android:orientation="vertical"
     android:focusable="true"
     android:descendantFocusability="afterDescendants"
+    android:id="@+id/expanded_view"
     >
  <com.android.systemui.statusbar.powerwidget.PowerWidget android:id="@+id/exp_power_stat"
             android:layout_width="match_parent"
