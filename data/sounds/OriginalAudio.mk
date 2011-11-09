@@ -59,8 +59,8 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/notifications/Heaven.ogg:system/media/audio/notifications/Heaven.ogg \
 	$(LOCAL_PATH)/notifications/TaDa.ogg:system/media/audio/notifications/TaDa.ogg \
 	$(LOCAL_PATH)/notifications/Tinkerbell.ogg:system/media/audio/notifications/Tinkerbell.ogg \
-	$(LOCAL_PATH)/notifications/Tinkerbell.ogg:system/media/audio/notifications/Simple_High.mp3 \
-	$(LOCAL_PATH)/notifications/Tinkerbell.ogg:system/media/audio/notifications/Simple_Low.mp3 \
+	$(LOCAL_PATH)/notifications/Simple_High.mp3:system/media/audio/notifications/Simple_High.mp3 \
+	$(LOCAL_PATH)/notifications/Simple_Low.mp3:system/media/audio/notifications/Simple_Low.mp3 \
 	$(LOCAL_PATH)/effects/Effect_Tick.ogg:system/media/audio/ui/Effect_Tick.ogg \
 	$(LOCAL_PATH)/effects/KeypressStandard.ogg:system/media/audio/ui/KeypressStandard.ogg \
 	$(LOCAL_PATH)/effects/KeypressSpacebar.ogg:system/media/audio/ui/KeypressSpacebar.ogg \
