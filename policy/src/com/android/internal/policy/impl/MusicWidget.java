@@ -605,6 +605,7 @@ public class MusicWidget extends RelativeLayout {
         String currentTitle = KeyguardViewMediator.TrackId();
 	String currentArtist = KeyguardViewMediator.Artist();
 	CharSequence nowPlaying = new StringBuilder().append(currentArtist).append(" / ").append(currentTitle).toString();
+
 	if(currentTitle == null && currentArtist == null){
 	  mMusicInfoTextInMax.setText("");
 	  mMusicInfoTextInMin.setText("");

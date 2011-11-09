@@ -49,7 +49,7 @@ class LockscreenWallpaperUpdater extends RelativeLayout {
     private static final int MSG_BOOT_COMPLETED = 0x140;
     private static final int MSG_LOCKSCREENWALLPAPER_CHANGED = 0x136;
     private static final String TAG = "LockscreenWallpaperUpdater";
-    private static final String WALLPAPERIMAGE_PATH = "/data/data/com.android.tsm_parts/lockscreen_wallpaper.jpg";
+    private static final String WALLPAPERIMAGE_PATH = "/data/data/com.android.tsm_parts/files/lockscreen_wallpaper.jpg";
 
     private boolean mBootCompleted = false;
     private BroadcastReceiver mBroadcastReceiver;
