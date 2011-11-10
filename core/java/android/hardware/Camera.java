@@ -1220,6 +1220,7 @@ public class Camera {
          * to other modes.
          */
         public static final String FOCUS_MODE_CONTINUOUS_VIDEO = "continuous-video";
+	public static final String FOCUS_MODE_NORMAL = "normal";
 
         // Indices for focus distance array.
         /**

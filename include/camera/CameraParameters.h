@@ -395,6 +395,7 @@ public:
     // CameraHardwareInterface.autoFocus in this mode. To stop continuous focus,
     // applications should change the focus mode to other modes.
     static const char FOCUS_MODE_CONTINUOUS_VIDEO[];
+    static const char FOCUS_MODE_NORMAL[];
 
 private:
     DefaultKeyedVector<String8,String8>    mMap;
