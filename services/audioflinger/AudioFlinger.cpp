@@ -126,22 +126,24 @@ static bool settingsAllowed() {
 }
 
 // ----------------------------------------------------------------------------
-
 AudioFlinger::AudioFlinger()
     : BnAudioFlinger(),
-<<<<<<< HEAD
-=======
 #ifdef OMAP_ENHANCEMENT
         mAudioHardware(0), mFmEnabled(false), mMasterVolume(1.0f), mMasterMute(false), mNextUniqueId(1)
 #elif defined(HAVE_FM_RADIO)
         mAudioHardware(0), mMasterVolume(1.0f), mMasterMute(false), mNextUniqueId(1),  mFmOn(false)
 #else
->>>>>>> 1a6862f... Updated OMAP support
         mAudioHardware(0), mMasterVolume(1.0f), mMasterMute(false), mNextUniqueId(1)
+#endif
 {
     mHardwareStatus = AUDIO_HW_IDLE;
 
     mAudioHardware = AudioHardwareInterface::create();
+
+#ifdef WITH_STATIC_A2DP
+    mAudioHardware = new A2dpAudioInterface(mAudioHardware);
+#endif
+
 
     mHardwareStatus = AUDIO_HW_INIT;
     if (mAudioHardware->initCheck() == NO_ERROR) {
@@ -475,6 +477,13 @@ status_t AudioFlinger::setMode(int mode)
         return BAD_VALUE;
     }
 
+#ifdef HAS_LGE_STAR_FM_RADIO
+    if (mode == AudioSystem::MODE_FM) {
+        mFmOn = true;
+    } else if (mFmOn) {
+        mFmOn = false;
+    }
+#endif
     { // scope for the lock
         AutoMutex lock(mHardwareLock);
         mHardwareStatus = AUDIO_HW_SET_MODE;
@@ -637,6 +646,11 @@ bool AudioFlinger::isStreamActive(int stream) const
             return true;
         }
     }
+#ifdef HAVE_FM_RADIO
+    if (mFmOn && stream == AudioSystem::MUSIC) {
+        return true;
+    }
+#endif
     return false;
 }
 
@@ -644,7 +658,7 @@ status_t AudioFlinger::setParameters(int ioHandle, const String8& keyValuePairs)
 {
     status_t result;
 
-    LOGV("setParameters(): io %d, keyvalue %s, tid %d, calling tid %d",
+    LOGD("setParameters(): io %d, keyvalue %s, tid %d, calling tid %d",
             ioHandle, keyValuePairs.string(), gettid(), IPCThreadState::self()->getCallingPid());
     // check calling permissions
     if (!settingsAllowed()) {
@@ -673,7 +687,30 @@ status_t AudioFlinger::setParameters(int ioHandle, const String8& keyValuePairs)
         }
     }
 #endif
+#if defined(HAVE_FM_RADIO) && !defined(HAS_LGE_STAR_FM_RADIO)
+    AudioParameter param = AudioParameter(keyValuePairs);
+    String8 key = String8(AudioParameter::keyRouting);
+    int device;
+    if (param.getInt(key, device) == NO_ERROR) {
+        if((device & AudioSystem::DEVICE_OUT_FM_ALL) && mFmOn == false){
+            mFmOn = true;
+         } else if (mFmOn == true && !(device & AudioSystem::DEVICE_OUT_FM_ALL)){
+            mFmOn = false;
+         }
+    }
 
+    String8 fmOnKey = String8(AudioParameter::keyFmOn);
+    String8 fmOffKey = String8(AudioParameter::keyFmOff);
+    if (param.getInt(fmOnKey, device) == NO_ERROR) {
+        mFmOn = true;
+        // Call hardware to switch FM on/off
+        mAudioHardware->setParameters(keyValuePairs);
+    } else if (param.getInt(fmOffKey, device) == NO_ERROR) {
+        mFmOn = false;
+        // Call hardware to switch FM on/off
+        mAudioHardware->setParameters(keyValuePairs);
+    }
+#endif
     // ioHandle == 0 means the parameters are global to the audio hardware interface
     if (ioHandle == 0) {
         AutoMutex lock(mHardwareLock);
@@ -780,6 +817,64 @@ status_t AudioFlinger::getRenderPosition(uint32_t *halFrames, uint32_t *dspFrame
 
     return BAD_VALUE;
 }
+
+#ifdef HAVE_FM_RADIO
+#ifdef USE_BROADCOM_FM_VOLUME_HACK
+/*
+ * NASTY HACK: Send raw HCI data to adjust the FM volume.
+ *
+ * Normally we would do this in libaudio, but this is for the case where
+ * we have a prebuilt libaudio and cannot modify it.
+ */
+static status_t set_volume_fm(uint32_t volume)
+{
+    int returnval = 0;
+    float ratio = 2.5;
+
+     char s1[100] = "hcitool cmd 0x3f 0xa 0x5 0xc0 0x41 0xf 0 0x20 0 0 0";
+     char s2[100] = "hcitool cmd 0x3f 0xa 0x5 0xe4 0x41 0xf 0 0x00 0 0 0";
+     char s3[100] = "hcitool cmd 0x3f 0xa 0x5 0xe0 0x41 0xf 0 ";
+
+     char stemp[10] = "";
+     char *pstarget = s3;
+
+     volume = (unsigned int)(volume * ratio);
+
+     sprintf(stemp, "0x%x ", volume);
+     pstarget = strcat(s3, stemp);
+     pstarget = strcat(s3, "0 0 0");
+
+     system(s1);
+     system(s2);
+     system(s3);
+
+     return returnval;
+}
+#endif
+
+status_t AudioFlinger::setFmVolume(float value)
+{
+	status_t ret;
+
+    // check calling permissions
+    if (!settingsAllowed()) {
+        return PERMISSION_DENIED;
+    }
+
+    AutoMutex lock(mHardwareLock);
+    mHardwareStatus = AUDIO_SET_FM_VOLUME;
+#ifdef USE_BROADCOM_FM_VOLUME_HACK
+    int vol = AudioSystem::logToLinear(value);
+    LOGI("setFmVolume %d", vol);
+    ret = set_volume_fm(vol);
+#else
+    ret = mAudioHardware->setFmVolume(value);
+#endif
+    mHardwareStatus = AUDIO_HW_IDLE;
+
+    return ret;
+}
+#endif
 
 void AudioFlinger::registerClient(const sp<IAudioFlingerClient>& client)
 {

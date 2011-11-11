@@ -16,8 +16,6 @@ ifeq ($(TARGET_USES_OLD_LIBSENSORS_HAL),true)
     LOCAL_CFLAGS += -DENABLE_SENSORS_COMPAT
 endif
 
-<<<<<<< HEAD
-=======
 ifeq ($(TARGET_SENSORS_NO_OPEN_CHECK),true)
     LOCAL_CFLAGS += -DSENSORS_NO_OPEN_CHECK
 endif
@@ -37,7 +35,6 @@ ifneq ($(filter p990 p999 p970, $(TARGET_BOOTLOADER_BOARD_NAME)),)
     endif
 endif
 
->>>>>>> 1a6862f... Updated OMAP support
 # need "-lrt" on Linux simulator to pick up clock_gettime
 ifeq ($(TARGET_SIMULATOR),true)
 	ifeq ($(HOST_OS),linux)

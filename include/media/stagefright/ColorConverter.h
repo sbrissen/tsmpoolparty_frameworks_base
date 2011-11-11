@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
+ * Copyright (c) 2010, Code Aurora Forum
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +72,6 @@ private:
             const void *srcBits, size_t srcSkip,
             void *dstBits, size_t dstSkip);
 
-<<<<<<< HEAD
-=======
     void convertNV12Tile(
         size_t width, size_t height,
         const void *srcBits, size_t srcSkip,
@@ -100,7 +99,6 @@ private:
             void *dstBits, size_t dstSkip, bool interlaced);
 #endif
 
->>>>>>> 1a6862f... Updated OMAP support
     ColorConverter(const ColorConverter &);
     ColorConverter &operator=(const ColorConverter &);
 };

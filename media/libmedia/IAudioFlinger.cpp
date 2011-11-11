@@ -70,16 +70,13 @@ enum {
     QUERY_EFFECT,
     GET_EFFECT_DESCRIPTOR,
     CREATE_EFFECT,
-<<<<<<< HEAD
-    MOVE_EFFECTS
-=======
     MOVE_EFFECTS,
 #ifdef OMAP_ENHANCEMENT
     SET_FMRX_ACTIVE
 #else
     SET_FM_VOLUME
 #endif
->>>>>>> 1a6862f... Updated OMAP support
+
 };
 
 class BpAudioFlinger : public BpInterface<IAudioFlinger>

@@ -19,6 +19,7 @@
 #define ANDROID_IOMX_H_
 
 #include <binder/IInterface.h>
+#include <binder/MemoryHeapBase.h>
 #include <utils/List.h>
 #include <utils/String8.h>
 
@@ -166,12 +167,9 @@ struct omx_message {
         EVENT,
         EMPTY_BUFFER_DONE,
         FILL_BUFFER_DONE,
-<<<<<<< HEAD
-=======
 #ifndef OMAP_ENHANCEMENT
         REGISTER_BUFFERS
 #endif
->>>>>>> 1a6862f... Updated OMAP support
 
     } type;
 
@@ -199,6 +197,7 @@ struct omx_message {
             OMX_TICKS timestamp;
             OMX_PTR platform_private;
             OMX_PTR data_ptr;
+            OMX_U32 pmem_offset;
         } extended_buffer_data;
 
     } u;
@@ -209,12 +208,9 @@ public:
     DECLARE_META_INTERFACE(OMXObserver);
 
     virtual void onMessage(const omx_message &msg) = 0;
-<<<<<<< HEAD
-=======
 #ifndef OMAP_ENHANCEMENT
     virtual void registerBuffers(const sp<IMemoryHeap> &mem) = 0;
 #endif
->>>>>>> 1a6862f... Updated OMAP support
 };
 
 #ifdef OMAP_ENHANCEMENT

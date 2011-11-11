@@ -34,13 +34,10 @@ enum {
 #endif
     OBSERVER_ON_MSG,
     RENDERER_RENDER,
-<<<<<<< HEAD
-=======
     REGISTER_BUFFERS,
 #ifdef OMAP_ENHANCEMENT
     GET_BUFFERS,
 #endif
->>>>>>> 1a6862f... Updated OMAP support
 };
 
 sp<IOMXRenderer> IOMX::createRenderer(
@@ -825,6 +822,13 @@ public:
 
         remote()->transact(OBSERVER_ON_MSG, data, &reply, IBinder::FLAG_ONEWAY);
     }
+
+    virtual void registerBuffers(const sp<IMemoryHeap> &mem) {
+        Parcel data, reply;
+        data.writeInterfaceToken(IOMXObserver::getInterfaceDescriptor());
+        data.writeStrongBinder(mem->asBinder());
+        remote()->transact(REGISTER_BUFFERS, data, &reply);
+    }
 };
 
 IMPLEMENT_META_INTERFACE(OMXObserver, "android.hardware.IOMXObserver");
@@ -844,8 +848,6 @@ status_t BnOMXObserver::onTransact(
 
             return NO_ERROR;
         }
-<<<<<<< HEAD
-=======
 #ifndef OMAP_ENHANCEMENT
         case REGISTER_BUFFERS:
         {
@@ -855,7 +857,6 @@ status_t BnOMXObserver::onTransact(
             registerBuffers(mem);
         }
 #endif
->>>>>>> 1a6862f... Updated OMAP support
 
         default:
             return BBinder::onTransact(code, data, reply, flags);

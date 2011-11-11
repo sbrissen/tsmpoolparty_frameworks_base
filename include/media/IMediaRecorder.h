@@ -52,6 +52,9 @@ public:
     virtual status_t        init() = 0;
     virtual status_t        close() = 0;
     virtual	status_t		release() = 0;
+    virtual     status_t                setCameraParameters(const String8& params) = 0;
+// sbrissen tw cam
+    virtual status_t        sendCommand(int32_t cmd, int32_t arg1, int32_t arg2) = 0;
 };
 
 // ----------------------------------------------------------------------------

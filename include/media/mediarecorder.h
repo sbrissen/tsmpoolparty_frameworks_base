@@ -45,10 +45,6 @@ enum audio_source {
     AUDIO_SOURCE_CAMCORDER = 5,
     AUDIO_SOURCE_VOICE_RECOGNITION = 6,
     AUDIO_SOURCE_VOICE_COMMUNICATION = 7,
-<<<<<<< HEAD
-    AUDIO_SOURCE_MAX = AUDIO_SOURCE_VOICE_COMMUNICATION,
-
-=======
 #ifdef OMAP_ENHANCEMENT
     AUDIO_SOURCE_FM_ANALOG = 8,
     AUDIO_SOURCE_MAX = AUDIO_SOURCE_FM_ANALOG,
@@ -61,7 +57,6 @@ enum audio_source {
     AUDIO_SOURCE_MAX = AUDIO_SOURCE_VOICE_COMMUNICATION,
 #endif
 #endif
->>>>>>> 1a6862f... Updated OMAP support
     AUDIO_SOURCE_LIST_END  // must be last - used to validate audio source type
 };
 
@@ -202,6 +197,9 @@ public:
     status_t    close();
     status_t    release();
     void        notify(int msg, int ext1, int ext2);
+	// sbrissen - TW cam
+    status_t    sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
+    status_t    setCameraParameters(const String8& params);
 
 private:
     void                    doCleanUp();

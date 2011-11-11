@@ -24,8 +24,7 @@ ifneq ($(OMAP_ENHANCEMENT), true)
 ifeq ($(TARGET_BOARD_PLATFORM), omap3)
 	LOCAL_CFLAGS += -DNO_RGBX_8888
 endif
-<<<<<<< HEAD
-=======
+
 endif
 
 ifeq ($(TARGET_DO_NOT_SETS_CAN_DRAW), true)
@@ -39,7 +38,7 @@ endif
 ifeq ($(BOARD_HAS_FLIPPED_SCREEN), true)
 	LOCAL_CFLAGS += -DHAS_FLIPPED_SCREEN
 endif
->>>>>>> 1a6862f... Updated OMAP support
+
 ifeq ($(TARGET_BOARD_PLATFORM), s5pc110)
 	LOCAL_CFLAGS += -DHAS_CONTEXT_PRIORITY
 endif

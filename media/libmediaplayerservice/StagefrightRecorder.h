@@ -55,6 +55,9 @@ struct StagefrightRecorder : public MediaRecorderBase {
     virtual status_t reset();
     virtual status_t getMaxAmplitude(int *max);
     virtual status_t dump(int fd, const Vector<String16>& args) const;
+    virtual status_t setCameraParameters(const String8& params);
+		// sbrissen tw cam
+    virtual status_t sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
 
 private:
     enum CameraFlags {
@@ -90,7 +93,6 @@ private:
     int32_t mAudioTimeScale;
     int64_t mMaxFileSizeBytes;
     int64_t mMaxFileDurationUs;
-	int32_t mDurationIntervalMs;
     int64_t mTrackEveryTimeDurationUs;
     int32_t mRotationDegrees;  // Clockwise
 
@@ -127,7 +129,6 @@ private:
     status_t setParamInterleaveDuration(int32_t durationUs);
     status_t setParam64BitFileOffset(bool use64BitFileOffset);
     status_t setParamMaxFileDurationUs(int64_t timeUs);
-	status_t setParamDurationIntervalMs(int32_t durationUs);
     status_t setParamMaxFileSizeBytes(int64_t bytes);
     status_t setParamMovieTimeScale(int32_t timeScale);
     void clipVideoBitRate();

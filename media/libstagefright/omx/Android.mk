@@ -8,6 +8,14 @@ LOCAL_C_INCLUDES := $(PV_INCLUDES)
 LOCAL_CFLAGS := $(PV_CFLAGS_MINUS_VISIBILITY)
 endif
 
+ifeq ($(TARGET_BOARD_PLATFORM),omap3)
+LOCAL_CFLAGS += -DTARGET_OMAP3
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
+LOCAL_CFLAGS += -DTARGET_7X30
+endif
+
 LOCAL_C_INCLUDES += $(JNI_H_INCLUDE)
 
 LOCAL_SRC_FILES:=                     \
@@ -44,6 +52,11 @@ endif
 
 ifneq ($(TARGET_SIMULATOR),true)
 LOCAL_SHARED_LIBRARIES += libdl
+endif
+
+ifeq ($(BOARD_CAMERA_USE_GETBUFFERINFO),true)
+        LOCAL_CFLAGS += -DUSE_GETBUFFERINFO
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/omxcore/inc
 endif
 
 LOCAL_MODULE:= libstagefright_omx

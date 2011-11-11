@@ -597,6 +597,15 @@ MediaRecorder::MediaRecorder()
     doCleanUp();
 }
 
+// sbrissen -tw cam
+status_t MediaRecorder::sendCommand(int32_t cmd, int32_t arg1, int32_t arg2)
+{
+    LOGV("sendCommand");
+    //sp <IMediaRecorder> c = mMediaRecorder;
+    //if (c == 0) return NO_INIT;
+    return mMediaRecorder->sendCommand(cmd, arg1, arg2);
+}
+
 status_t MediaRecorder::initCheck()
 {
     return mMediaRecorder != 0 ? NO_ERROR : NO_INIT;

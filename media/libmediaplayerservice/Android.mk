@@ -61,8 +61,6 @@ LOCAL_C_INCLUDES :=                                                 \
         $(TOP)/external/flac/include                                    \
         $(TOP)/external/tremolo/Tremolo
 
-<<<<<<< HEAD
-=======
 ifeq ($(strip $(BOARD_USES_HW_MEDIARECORDER)),true)
     LOCAL_SHARED_LIBRARIES += libhwmediarecorder
     LOCAL_CFLAGS += -DUSE_BOARD_MEDIARECORDER
@@ -81,7 +79,6 @@ LOCAL_SHARED_LIBRARIES += libui
 
 endif
 
->>>>>>> 1a6862f... Updated OMAP support
 LOCAL_MODULE:= libmediaplayerservice
 
 include $(BUILD_SHARED_LIBRARY)

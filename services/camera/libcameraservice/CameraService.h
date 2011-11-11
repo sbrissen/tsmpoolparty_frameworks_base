@@ -1,6 +1,8 @@
 /*
 **
 ** Copyright (C) 2008, The Android Open Source Project
+** Copyright (C) 2008 HTC Inc.
+** Copyright (C) 2010, Code Aurora Forum. All rights reserved.
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -97,6 +99,10 @@ private:
         virtual status_t        unlock();
         virtual status_t        setPreviewDisplay(const sp<ISurface>& surface);
         virtual void            setPreviewCallbackFlag(int flag);
+#ifdef USE_GETBUFFERINFO
+        // get the recording buffers information from HAL Layer.
+        virtual status_t        getBufferInfo(sp<IMemory>& Frame, size_t *alignedSize);
+#endif
         virtual status_t        startPreview();
         virtual void            stopPreview();
         virtual bool            previewEnabled();
@@ -109,6 +115,10 @@ private:
         virtual status_t        takePicture();
         virtual status_t        setParameters(const String8& params);
         virtual String8         getParameters() const;
+        #ifdef MOTO_CUSTOM_PARAMETERS
+        virtual status_t        setCustomParameters(const String8& params);
+        virtual String8         getCustomParameters() const;
+        #endif
         virtual status_t        sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
     private:
         friend class CameraService;
@@ -153,7 +163,11 @@ private:
         // convert client from cookie
         static sp<Client>       getClientFromCookie(void* user);
         // handlers for messages
+#ifdef BOARD_USE_CAF_LIBCAMERA
+        void                    handleShutter(image_rect_type *size,  bool playShutterSoundOnly);
+#else
         void                    handleShutter(image_rect_type *size);
+#endif
         void                    handlePreviewData(const sp<IMemory>& mem);
         void                    handlePostview(const sp<IMemory>& mem);
         void                    handleRawPicture(const sp<IMemory>& mem);
@@ -190,6 +204,9 @@ private:
         sp<CameraHardwareInterface>     mHardware;       // cleared after disconnect()
         bool                            mUseOverlay;     // immutable after constructor
         sp<OverlayRef>                  mOverlayRef;
+#if defined(USE_OVERLAY_FORMAT_YCbCr_420_SP) || defined(USE_OVERLAY_FORMAT_YCrCb_420_SP)
+        sp<Overlay>                     mOverlay;
+#endif
         int                             mOverlayW;
         int                             mOverlayH;
         int                             mPreviewCallbackFlag;

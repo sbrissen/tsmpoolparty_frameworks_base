@@ -46,7 +46,9 @@ enum {
     SET_VIDEO_SIZE,
     SET_VIDEO_FRAMERATE,
     SET_PARAMETERS,
+    SET_CAMERA_PARAMETERS,
     SET_PREVIEW_SURFACE,
+	SEND_COMMAND,
     SET_CAMERA,
     SET_LISTENER
 };
@@ -179,6 +181,18 @@ public:
         remote()->transact(SET_VIDEO_FRAMERATE, data, &reply);
         return reply.readInt32();
     }
+	
+	virtual status_t sendCommand(int32_t cmd, int32_t arg1, int32_t arg2)
+    {
+        LOGV("sendCommand");
+        Parcel data, reply;
+        data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
+        data.writeInt32(cmd);
+        data.writeInt32(arg1);
+        data.writeInt32(arg2);
+        remote()->transact(SEND_COMMAND, data, &reply);
+        return reply.readInt32();
+    }
 
     status_t setParameters(const String8& params)
     {
@@ -187,6 +201,16 @@ public:
         data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
         data.writeString8(params);
         remote()->transact(SET_PARAMETERS, data, &reply);
+        return reply.readInt32();
+    }
+
+    status_t setCameraParameters(const String8& params)
+    {
+        LOGV("setCameraParameter(%s)", params.string());
+        Parcel data, reply;
+        data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
+        data.writeString8(params);
+        remote()->transact(SET_CAMERA_PARAMETERS, data, &reply);
         return reply.readInt32();
     }
 
@@ -392,10 +416,25 @@ status_t BnMediaRecorder::onTransact(
             reply->writeInt32(setVideoFrameRate(frames_per_second));
             return NO_ERROR;
         } break;
+		case SEND_COMMAND: {
+            LOGV("SEND_COMMAND");
+            CHECK_INTERFACE(IMediaRecorder, data, reply);
+            int command = data.readInt32();
+            int arg1 = data.readInt32();
+            int arg2 = data.readInt32();
+            reply->writeInt32(sendCommand(command, arg1, arg2));
+            return NO_ERROR;
+         } break;
         case SET_PARAMETERS: {
             LOGV("SET_PARAMETER");
             CHECK_INTERFACE(IMediaRecorder, data, reply);
             reply->writeInt32(setParameters(data.readString8()));
+            return NO_ERROR;
+        } break;
+        case SET_CAMERA_PARAMETERS: {
+            LOGV("SET_CAMERA_PARAMETER");
+            CHECK_INTERFACE(IMediaRecorder, data, reply);
+            reply->writeInt32(setCameraParameters(data.readString8()));
             return NO_ERROR;
         } break;
         case SET_LISTENER: {

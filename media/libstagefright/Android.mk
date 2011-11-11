@@ -131,6 +131,27 @@ ifneq ($(TARGET_SIMULATOR),true)
 LOCAL_SHARED_LIBRARIES += libdl
 endif
 
+ifneq ($(filter qsd8k msm7k msm7625 msm7x30, $(TARGET_BOARD_PLATFORM)),)
+        LOCAL_CFLAGS += -DUSE_QCOM_OMX_FIX
+endif
+
+ifeq ($(BOARD_USE_YUV422I_DEFAULT_COLORFORMAT),true)
+	LOCAL_CFLAGS += -DUSE_YUV422I_DEFAULT_COLORFORMAT
+endif
+
+ifeq ($(BOARD_CAMERA_USE_GETBUFFERINFO),true)
+        LOCAL_CFLAGS += -DUSE_GETBUFFERINFO
+        LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/omxcore/inc
+endif
+
+ifeq ($(TARGET_USE_SOFTWARE_AUDIO_AAC),true)
+	LOCAL_CFLAGS += -DUSE_SOFTWARE_AUDIO_AAC
+endif
+
+ifeq ($(TARGET_DONT_SET_AUDIO_AAC_FORMAT),true)
+        LOCAL_CFLAGS += -DDONT_SET_AUDIO_AAC_FORMAT
+endif
+
 ifeq ($(TARGET_OS)-$(TARGET_SIMULATOR),linux-true)
         LOCAL_LDLIBS += -lpthread
 endif

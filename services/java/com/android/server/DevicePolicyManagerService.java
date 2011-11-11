@@ -1023,4 +1023,10 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
             pw.print("  mPasswordOwner="); pw.println(mPasswordOwner);
         }
     }
+	
+	public boolean getAllowCamera(ComponentName cp) {
+        synchronized (this) {
+			return true;
+		}
+	}
 }

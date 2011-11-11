@@ -49,8 +49,11 @@ public:
     virtual     status_t        init();
     virtual     status_t        close();
     virtual     status_t        release();
+	virtual		status_t        sendCommand(int32_t cmd, int32_t arg1, int32_t arg2);
 
     virtual     status_t        dump(int fd, const Vector<String16>& args) const;
+
+    virtual     status_t        setCameraParameters(const String8& params);
 private:
     friend class                MediaPlayerService;  // for accessing private constructor
 

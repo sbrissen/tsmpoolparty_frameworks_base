@@ -30,6 +30,10 @@
 
 #include "SensorDevice.h"
 
+#ifdef USE_LGE_ALS_DUMMY
+#include <fcntl.h>
+#endif
+
 namespace android {
 // ---------------------------------------------------------------------------
 class BatteryService : public Singleton<BatteryService> {
@@ -97,6 +101,27 @@ ANDROID_SINGLETON_STATIC_INSTANCE(BatteryService)
 
 ANDROID_SINGLETON_STATIC_INSTANCE(SensorDevice)
 
+#ifdef USE_LGE_ALS_DUMMY
+static ssize_t addDummyLGESensor(sensor_t const **list, ssize_t count) {
+    struct sensor_t dummy_light =     {
+                  name            : "Dummy LGE-Star light sensor",
+                  vendor          : "CyanogenMod",
+                  version         : 1,
+                  handle          : SENSOR_TYPE_LIGHT,
+                  type            : SENSOR_TYPE_LIGHT,
+                  maxRange        : 20,
+                  resolution      : 0.1,
+                  power           : 20,
+    };
+    void * new_list = malloc((count+1)*sizeof(sensor_t));
+    new_list = memcpy(new_list, *list, count*sizeof(sensor_t));
+    ((sensor_t *)new_list)[count] = dummy_light;
+    *list = (sensor_t const *)new_list;
+    count++;
+    return count;
+}
+#endif
+
 SensorDevice::SensorDevice()
     :  mSensorDevice(0),
        mOldSensorsEnabled(0),
@@ -111,6 +136,11 @@ SensorDevice::SensorDevice()
 
     if (mSensorModule) {
 #ifdef ENABLE_SENSORS_COMPAT
+#ifdef SENSORS_NO_OPEN_CHECK
+        sensors_control_open(&mSensorModule->common, &mSensorControlDevice) ;
+        sensors_data_open(&mSensorModule->common, &mSensorDataDevice) ;
+        mOldSensorsCompatMode = true;
+#else
         if (!sensors_control_open(&mSensorModule->common, &mSensorControlDevice)) {
             if (sensors_data_open(&mSensorModule->common, &mSensorDataDevice)) {
                 LOGE("couldn't open data device in backwards-compat mode for module %s (%s)",
@@ -123,17 +153,21 @@ SensorDevice::SensorDevice()
             LOGE("couldn't open control device in backwards-compat mode for module %s (%s)",
                     SENSORS_HARDWARE_MODULE_ID, strerror(-err));
         }
+#endif
 #else
-
         err = sensors_open(&mSensorModule->common, &mSensorDevice);
-
         LOGE_IF(err, "couldn't open device for module %s (%s)",
                 SENSORS_HARDWARE_MODULE_ID, strerror(-err));
 #endif
 
+
         if (mSensorDevice || mOldSensorsCompatMode) {
             sensor_t const* list;
             ssize_t count = mSensorModule->get_sensors_list(mSensorModule, &list);
+
+#ifdef USE_LGE_ALS_DUMMY
+            count = addDummyLGESensor(&list, count);
+#endif
 
             if (mOldSensorsCompatMode) {
                 mOldSensorsList = list;
@@ -177,6 +211,10 @@ void SensorDevice::dump(String8& result, char* buffer, size_t SIZE)
 ssize_t SensorDevice::getSensorList(sensor_t const** list) {
     if (!mSensorModule) return NO_INIT;
     ssize_t count = mSensorModule->get_sensors_list(mSensorModule, list);
+
+#ifdef USE_LGE_ALS_DUMMY
+    return addDummyLGESensor(list, count);
+#endif
     return count;
 }
 
@@ -232,6 +270,18 @@ ssize_t SensorDevice::poll(sensors_event_t* buffer, size_t count) {
              * for the number of requested samples to fill, and deliver
              * it immediately */
             if (sensorType == SENSOR_TYPE_PROXIMITY) {
+#ifdef FOXCONN_SENSORS
+            /* Fix ridiculous API breakages from FIH. */
+            /* These idiots are returning -1 for FAR, and 1 for NEAR */
+                if (buffer[pollsDone].distance > 0) {
+                    buffer[pollsDone].distance = 0;
+                } else {
+                    buffer[pollsDone].distance = 1;
+                }
+#elif defined(PROXIMITY_LIES)
+                if (buffer[pollsDone].distance >= PROXIMITY_LIES)
+			buffer[pollsDone].distance = maxRange;
+#endif
                 return pollsDone+1;
             } else if (sensorType == SENSOR_TYPE_LIGHT) {
                 return pollsDone+1;
@@ -250,8 +300,6 @@ status_t SensorDevice::activate(void* ident, int handle, int enabled)
     status_t err(NO_ERROR);
     bool actuateHardware = false;
 
-<<<<<<< HEAD
-=======
 #ifdef USE_LGE_ALS_DUMMY
 
     if (handle == SENSOR_TYPE_LIGHT) {
@@ -287,7 +335,6 @@ status_t SensorDevice::activate(void* ident, int handle, int enabled)
 
     }
 #endif
->>>>>>> 1a6862f... Updated OMAP support
     Info& info( mActivationCount.editValueFor(handle) );
     if (enabled) {
         Mutex::Autolock _l(mLock);

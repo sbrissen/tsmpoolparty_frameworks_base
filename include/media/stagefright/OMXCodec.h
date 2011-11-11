@@ -80,6 +80,8 @@ struct OMXCodec : public MediaSource,
 
     virtual status_t pause();
 
+    void registerBuffers(const sp<IMemoryHeap> &mem);
+
     // from MediaBufferObserver
     virtual void signalBufferReturned(MediaBuffer *buffer);
 
@@ -137,8 +139,6 @@ private:
         kRequiresLargerEncoderOutputBuffer    = 4096,
         kOutputBuffersAreUnreadable           = 8192,
         kStoreMetaDataInInputVideoBuffers     = 16384,
-<<<<<<< HEAD
-=======
         kCanNotSetVideoParameters             = 32768,
         kDoesNotRequireMemcpyOnOutputPort     = 65536,
 #ifdef OMAP_ENHANCEMENT
@@ -147,7 +147,6 @@ private:
         kInterlacedOutputContent              = 524288,
         kThumbnailMode                        = 1048576,
 #endif
->>>>>>> 1a6862f... Updated OMAP support
     };
 
     struct BufferInfo {
@@ -178,7 +177,7 @@ private:
     sp<MediaSource> mSource;
     Vector<CodecSpecificData *> mCodecSpecificData;
     size_t mCodecSpecificDataIndex;
-
+    sp<IMemoryHeap> mPmemInfo;
     sp<MemoryDealer> mDealer[2];
 
     State mState;
